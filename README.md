@@ -49,12 +49,16 @@ A comprehensive Flask-based security scanning web application with real-time sec
 - **Checkov** - Infrastructure as Code security scanner
 - **Terrascan** - Infrastructure as Code security analysis
 - **TFSec** - Terraform security scanner
+- **Configuration Files**: Tool-specific configuration files (acunetix-config.json, veracode.json) for scan parameters and policies
+
 
 ### Real-time Features
 - **Live Vulnerability Monitoring** - Real-time vulnerability discovery and tracking
 - **Interactive Charts** - Vulnerability trends and severity distribution
 - **Automated Scanning** - Scheduled security scans with APScheduler
 - **Progressive Web App** - Responsive design with offline capabilities
+
+
 
 ## Quick Start
 
@@ -374,6 +378,12 @@ mypy app.py routes.py models.py
 - Database connectivity checks
 - External service availability
 - Automated recovery procedures
+
+## Third-party Services
+- **CDN Resources**: Bootstrap CSS, Chart.js, and Feather Icons served from CDN for performance
+- **Database Support**: SQLAlchemy with multi-database compatibility (SQLite, PostgreSQL)
+- **Background Services**: APScheduler for automated scanning and maintenance tasks
+- **Security Standards**: OWASP Top 10, SANS Top 25, PCI DSS, GDPR, SOC2, and NIST compliance checking
 
 ## Troubleshooting
 

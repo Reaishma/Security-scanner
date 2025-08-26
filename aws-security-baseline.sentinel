@@ -1,0 +1,144 @@
+# AWS Security Baseline Policy
+# Enforces security best practices for AWS infrastructure
+
+import "tfplan/v2" as tfplan
+import "tfconfig/v2" as tfconfig
+import "strings"
+import "types"
+
+# Allowed AWS regions for compliance
+allowed_regions = [
+    "us-east-1",
+    "us-west-2", 
+    "eu-west-1",
+    "eu-central-1"
+]
+
+# Required tags for all resources
+required_tags = [
+    "Environment",
+    "Owner", 
+    "Project",
+    "CostCenter"
+]
+
+# Policy: Ensure all EC2 instances have encryption enabled
+mandatory_instance_encryption = rule {
+    all tfplan.resource_changes as _, rc {
+        rc.type is "aws_instance" and
+        rc.change.actions contains "create"
+    } as instances {
+        all instances as _, instance {
+            instance.change.after.root_block_device[0].encrypted is true
+        }
+    }
+}
+
+# Policy: Ensure S3 buckets have encryption and versioning
+secure_s3_buckets = rule {
+    all tfplan.resource_changes as _, rc {
+        rc.type is "aws_s3_bucket" and 
+        rc.change.actions contains "create"
+    } as buckets {
+        all buckets as _, bucket {
+            bucket.change.after.versioning[0].enabled is true and
+            bucket.change.after.server_side_encryption_configuration is not null
+        }
+    }
+}
+
+# Policy: Enforce allowed regions
+region_compliance = rule {
+    all tfconfig.providers.aws as _, provider {
+        provider.config.region.constant_value in allowed_regions
+    }
+}
+
+# Policy: Ensure RDS instances are encrypted
+rds_encryption = rule {
+    all tfplan.resource_changes as _, rc {
+        rc.type is "aws_db_instance" and
+        rc.change.actions contains "create"
+    } as instances {
+        all instances as _, instance {
+            instance.change.after.storage_encrypted is true
+        }
+    }
+}
+
+# Policy: Ensure security groups don't allow unrestricted access
+security_group_restrictions = rule {
+    all tfplan.resource_changes as _, rc {
+        rc.type is "aws_security_group" and
+        rc.change.actions contains "create"
+    } as sgs {
+        all sgs as _, sg {
+            all sg.change.after.ingress else [] as _, rule {
+                not (rule.cidr_blocks contains "0.0.0.0/0" and 
+                     (rule.from_port is 22 or rule.from_port is 3389))
+            }
+        }
+    }
+}
+
+# Policy: Require specific tags on resources  
+mandatory_tagging = rule {
+    all tfplan.resource_changes as _, rc {
+        rc.type matches "^aws_" and
+        rc.change.actions contains "create" and
+        "tags" in keys(rc.change.after)
+    } as resources {
+        all resources as _, resource {
+            all required_tags as _, tag {
+                tag in keys(resource.change.after.tags)
+            }
+        }
+    }
+}
+
+# Policy: Ensure CloudTrail is enabled
+cloudtrail_enabled = rule {
+    length(filter(tfplan.resource_changes as _, rc {
+        rc.type is "aws_cloudtrail" and
+        rc.change.actions contains "create" and
+        rc.change.after.enable_logging is true
+    })) > 0
+}
+
+# Policy: Ensure VPC flow logs are enabled
+vpc_flow_logs = rule {
+    all tfplan.resource_changes as _, rc {
+        rc.type is "aws_vpc" and
+        rc.change.actions contains "create"
+    } as vpcs {
+        length(filter(tfplan.resource_changes as _, flow_rc {
+            flow_rc.type is "aws_flow_log" and
+            flow_rc.change.actions contains "create"
+        })) >= length(vpcs)
+    }
+}
+
+# Policy: Ensure ELB has access logging enabled
+elb_access_logging = rule {
+    all tfplan.resource_changes as _, rc {
+        rc.type is "aws_lb" and
+        rc.change.actions contains "create"
+    } as elbs {
+        all elbs as _, elb {
+            elb.change.after.access_logs[0].enabled is true
+        }
+    }
+}
+
+# Main policy rule - all security policies must pass
+main = rule {
+    mandatory_instance_encryption and
+    secure_s3_buckets and
+    region_compliance and
+    rds_encryption and
+    security_group_restrictions and
+    mandatory_tagging and
+    cloudtrail_enabled and
+    vpc_flow_logs and
+    elb_access_logging
+}

@@ -1,0 +1,161 @@
+# Cost Management Policy
+# Enforces cost controls and resource limits
+
+import "tfplan/v2" as tfplan
+import "decimal"
+import "strings"
+
+# Maximum allowed instance types by environment
+allowed_instance_types = {
+    "dev": [
+        "t3.micro",
+        "t3.small", 
+        "t3.medium"
+    ],
+    "staging": [
+        "t3.medium",
+        "t3.large",
+        "m5.large"
+    ],
+    "prod": [
+        "t3.large",
+        "t3.xlarge",
+        "m5.large",
+        "m5.xlarge",
+        "c5.large",
+        "c5.xlarge"
+    ]
+}
+
+# Cost thresholds per environment (monthly USD)
+cost_limits = {
+    "dev": 500,
+    "staging": 2000,
+    "prod": 10000
+}
+
+# Get environment from tags
+get_environment = func(resource) {
+    if "tags" in keys(resource.change.after) and
+       "Environment" in keys(resource.change.after.tags) {
+        return strings.to_lower(resource.change.after.tags["Environment"])
+    }
+    return "unknown"
+}
+
+# Policy: Restrict EC2 instance types by environment
+instance_type_restrictions = rule {
+    all tfplan.resource_changes as _, rc {
+        rc.type is "aws_instance" and
+        rc.change.actions contains "create"
+    } as instances {
+        all instances as _, instance {
+            environment = get_environment(instance)
+            environment in keys(allowed_instance_types) and
+            instance.change.after.instance_type in allowed_instance_types[environment]
+        }
+    }
+}
+
+# Policy: Limit RDS instance classes
+rds_instance_restrictions = rule {
+    all tfplan.resource_changes as _, rc {
+        rc.type is "aws_db_instance" and
+        rc.change.actions contains "create"
+    } as instances {
+        all instances as _, instance {
+            environment = get_environment(instance)
+            
+            # Dev environment restrictions
+            if environment is "dev" {
+                instance.change.after.instance_class in [
+                    "db.t3.micro",
+                    "db.t3.small"
+                ]
+            } else if environment is "staging" {
+                instance.change.after.instance_class in [
+                    "db.t3.small",
+                    "db.t3.medium",
+                    "db.r5.large"
+                ]
+            } else {
+                # Production allows more flexibility
+                true
+            }
+        }
+    }
+}
+
+# Policy: Prevent expensive storage types in non-prod
+storage_type_restrictions = rule {
+    all tfplan.resource_changes as _, rc {
+        rc.type is "aws_ebs_volume" and
+        rc.change.actions contains "create"
+    } as volumes {
+        all volumes as _, volume {
+            environment = get_environment(volume)
+            
+            if environment in ["dev", "staging"] {
+                volume.change.after.type in ["gp3", "gp2"]
+            } else {
+                true
+            }
+        }
+    }
+}
+
+# Policy: Limit S3 storage classes for cost optimization
+s3_storage_optimization = rule {
+    all tfplan.resource_changes as _, rc {
+        rc.type is "aws_s3_bucket_lifecycle_configuration" and
+        rc.change.actions contains "create"
+    } as configs {
+        all configs as _, config {
+            length(config.change.after.rule) > 0
+        }
+    }
+}
+
+# Policy: Require resource scheduling tags for non-prod
+scheduling_tags = rule {
+    all tfplan.resource_changes as _, rc {
+        rc.type is "aws_instance" and
+        rc.change.actions contains "create"
+    } as instances {
+        all instances as _, instance {
+            environment = get_environment(instance)
+            
+            if environment in ["dev", "staging"] {
+                "Schedule" in keys(instance.change.after.tags)
+            } else {
+                true
+            }
+        }
+    }
+}
+
+# Policy: Prevent creation of expensive resources without approval
+expensive_resource_approval = rule {
+    all tfplan.resource_changes as _, rc {
+        rc.type in [
+            "aws_redshift_cluster",
+            "aws_elasticsearch_domain", 
+            "aws_ecs_cluster"
+        ] and
+        rc.change.actions contains "create"
+    } as resources {
+        all resources as _, resource {
+            "ApprovedBy" in keys(resource.change.after.tags)
+        }
+    }
+}
+
+# Main cost management rule
+main = rule {
+    instance_type_restrictions and
+    rds_instance_restrictions and
+    storage_type_restrictions and
+    s3_storage_optimization and
+    scheduling_tags and
+    expensive_resource_approval
+}

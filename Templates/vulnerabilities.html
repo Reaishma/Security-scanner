@@ -1,0 +1,449 @@
+{% extends "base.html" %}
+
+{% block title %}Vulnerabilities{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1 class="h3 mb-3">
+            <i data-feather="alert-triangle" class="me-2"></i>
+            Vulnerabilities
+        </h1>
+        <p class="text-muted">Manage and track security vulnerabilities across your applications</p>
+    </div>
+</div>
+
+<!-- Vulnerability Statistics -->
+<div class="row mb-4">
+    <div class="col-md-3 mb-3">
+        <div class="card border-danger">
+            <div class="card-body text-center">
+                <i data-feather="alert-triangle" class="text-danger mb-2" width="40" height="40"></i>
+                <h3 class="mb-1 text-danger">{{ vulnerabilities|selectattr("severity", "equalto", "critical")|list|length }}</h3>
+                <small class="text-muted">Critical</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card border-warning">
+            <div class="card-body text-center">
+                <i data-feather="alert-circle" class="text-warning mb-2" width="40" height="40"></i>
+                <h3 class="mb-1 text-warning">{{ vulnerabilities|selectattr("severity", "equalto", "high")|list|length }}</h3>
+                <small class="text-muted">High</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card border-info">
+            <div class="card-body text-center">
+                <i data-feather="info" class="text-info mb-2" width="40" height="40"></i>
+                <h3 class="mb-1 text-info">{{ vulnerabilities|selectattr("severity", "equalto", "medium")|list|length }}</h3>
+                <small class="text-muted">Medium</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card border-success">
+            <div class="card-body text-center">
+                <i data-feather="check-circle" class="text-success mb-2" width="40" height="40"></i>
+                <h3 class="mb-1 text-success">{{ vulnerabilities|selectattr("severity", "equalto", "low")|list|length }}</h3>
+                <small class="text-muted">Low</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Vulnerability Filters -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <form class="row g-3">
+                    <div class="col-md-2">
+                        <label for="severityFilter" class="form-label">Severity</label>
+                        <select class="form-select" id="severityFilter" onchange="filterVulnerabilities()">
+                            <option value="">All Severities</option>
+                            <option value="critical">Critical</option>
+                            <option value="high">High</option>
+                            <option value="medium">Medium</option>
+                            <option value="low">Low</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="statusFilter" class="form-label">Status</label>
+                        <select class="form-select" id="statusFilter" onchange="filterVulnerabilities()">
+                            <option value="">All Statuses</option>
+                            <option value="open">Open</option>
+                            <option value="fixed">Fixed</option>
+                            <option value="false_positive">False Positive</option>
+                            <option value="ignored">Ignored</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="typeFilter" class="form-label">Type</label>
+                        <select class="form-select" id="typeFilter" onchange="filterVulnerabilities()">
+                            <option value="">All Types</option>
+                            <option value="SQL Injection">SQL Injection</option>
+                            <option value="XSS">Cross-Site Scripting</option>
+                            <option value="Hardcoded Credentials">Hardcoded Credentials</option>
+                            <option value="Buffer Overflow">Buffer Overflow</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="cweFilter" class="form-label">CWE</label>
+                        <input type="text" class="form-control" id="cweFilter" placeholder="CWE-89" onkeyup="filterVulnerabilities()">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="searchFilter" class="form-label">Search</label>
+                        <input type="text" class="form-control" id="searchFilter" placeholder="Search vulnerabilities..." onkeyup="filterVulnerabilities()">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Vulnerabilities Table -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">
+                    <i data-feather="list" class="me-2"></i>
+                    Security Vulnerabilities
+                </h5>
+                <div class="btn-group">
+                    <button class="btn btn-outline-primary btn-sm" onclick="exportVulnerabilities()">
+                        <i data-feather="download" class="me-1"></i>
+                        Export
+                    </button>
+                    <button class="btn btn-outline-secondary btn-sm" onclick="bulkActions()">
+                        <i data-feather="edit" class="me-1"></i>
+                        Bulk Actions
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover" id="vulnerabilitiesTable">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <input type="checkbox" class="form-check-input" id="selectAll" onchange="toggleSelectAll()">
+                                </th>
+                                <th>ID</th>
+                                <th>Severity</th>
+                                <th>Type</th>
+                                <th>Description</th>
+                                <th>Location</th>
+                                <th>CWE</th>
+                                <th>CVSS</th>
+                                <th>Status</th>
+                                <th>Discovered</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for vuln in vulnerabilities %}
+                            <tr data-severity="{{ vuln.severity }}" data-status="{{ vuln.status }}" data-type="{{ vuln.vulnerability_type }}" data-cwe="{{ vuln.cwe_id }}">
+                                <td>
+                                    <input type="checkbox" class="form-check-input vuln-checkbox" value="{{ vuln.id }}">
+                                </td>
+                                <td>
+                                    <code>#{{ vuln.id }}</code>
+                                </td>
+                                <td>
+                                    {% if vuln.severity == 'critical' %}
+                                        <span class="badge bg-danger">
+                                            <i data-feather="alert-triangle" width="12" height="12"></i>
+                                            Critical
+                                        </span>
+                                    {% elif vuln.severity == 'high' %}
+                                        <span class="badge bg-warning">
+                                            <i data-feather="alert-circle" width="12" height="12"></i>
+                                            High
+                                        </span>
+                                    {% elif vuln.severity == 'medium' %}
+                                        <span class="badge bg-info">
+                                            <i data-feather="info" width="12" height="12"></i>
+                                            Medium
+                                        </span>
+                                    {% else %}
+                                        <span class="badge bg-success">
+                                            <i data-feather="check-circle" width="12" height="12"></i>
+                                            Low
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="text-muted">{{ vuln.vulnerability_type }}</span>
+                                </td>
+                                <td>
+                                    <div class="vulnerability-description">
+                                        {{ vuln.description[:100] }}{% if vuln.description|length > 100 %}...{% endif %}
+                                    </div>
+                                </td>
+                                <td>
+                                    {% if vuln.file_path %}
+                                        <small class="text-muted">
+                                            <i data-feather="file" width="12" height="12"></i>
+                                            {{ vuln.file_path.split('/')[-1] }}
+                                            {% if vuln.line_number %}
+                                                :{{ vuln.line_number }}
+                                            {% endif %}
+                                        </small>
+                                    {% else %}
+                                        <span class="text-muted">--</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if vuln.cwe_id %}
+                                        <code>{{ vuln.cwe_id }}</code>
+                                    {% else %}
+                                        <span class="text-muted">--</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if vuln.cvss_score %}
+                                        <span class="badge 
+                                            {% if vuln.cvss_score >= 9.0 %}bg-danger
+                                            {% elif vuln.cvss_score >= 7.0 %}bg-warning
+                                            {% elif vuln.cvss_score >= 4.0 %}bg-info
+                                            {% else %}bg-success{% endif %}">
+                                            {{ vuln.cvss_score }}
+                                        </span>
+                                    {% else %}
+                                        <span class="text-muted">--</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if vuln.status == 'open' %}
+                                        <span class="badge bg-danger">Open</span>
+                                    {% elif vuln.status == 'fixed' %}
+                                        <span class="badge bg-success">Fixed</span>
+                                    {% elif vuln.status == 'false_positive' %}
+                                        <span class="badge bg-secondary">False Positive</span>
+                                    {% else %}
+                                        <span class="badge bg-warning">Ignored</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <small class="text-muted">
+                                        {{ vuln.discovered_at.strftime('%m/%d %H:%M') if vuln.discovered_at else '--' }}
+                                    </small>
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <button class="btn btn-outline-primary btn-sm" onclick="viewVulnerabilityDetails({{ vuln.id }})" title="View Details">
+                                            <i data-feather="eye" width="14" height="14"></i>
+                                        </button>
+                                        <button class="btn btn-outline-success btn-sm" onclick="updateVulnerabilityStatus({{ vuln.id }}, 'fixed')" title="Mark as Fixed">
+                                            <i data-feather="check" width="14" height="14"></i>
+                                        </button>
+                                        <button class="btn btn-outline-secondary btn-sm" onclick="updateVulnerabilityStatus({{ vuln.id }}, 'false_positive')" title="Mark as False Positive">
+                                            <i data-feather="x" width="14" height="14"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                {% if not vulnerabilities %}
+                <div class="text-center py-5">
+                    <i data-feather="shield-off" width="64" height="64" class="text-muted mb-3"></i>
+                    <h5 class="text-muted">No vulnerabilities found</h5>
+                    <p class="text-muted mb-4">Great! Your applications appear to be secure.</p>
+                    <a href="{{ url_for('scans') }}" class="btn btn-primary">
+                        <i data-feather="search" class="me-1"></i>
+                        Run Security Scan
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Vulnerability Details Modal -->
+<div class="modal fade" id="vulnerabilityDetailsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Vulnerability Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="vulnerabilityDetailsContent">
+                <!-- Content will be loaded dynamically -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-success" onclick="markAsFixed()">Mark as Fixed</button>
+                <button type="button" class="btn btn-warning" onclick="markAsFalsePositive()">False Positive</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let currentVulnerabilityId = null;
+
+function filterVulnerabilities() {
+    const severityFilter = document.getElementById('severityFilter').value;
+    const statusFilter = document.getElementById('statusFilter').value;
+    const typeFilter = document.getElementById('typeFilter').value;
+    const cweFilter = document.getElementById('cweFilter').value.toLowerCase();
+    const searchFilter = document.getElementById('searchFilter').value.toLowerCase();
+    
+    const rows = document.querySelectorAll('#vulnerabilitiesTable tbody tr');
+    
+    rows.forEach(row => {
+        const severity = row.getAttribute('data-severity');
+        const status = row.getAttribute('data-status');
+        const type = row.getAttribute('data-type');
+        const cwe = row.getAttribute('data-cwe');
+        const text = row.textContent.toLowerCase();
+        
+        let show = true;
+        
+        if (severityFilter && severity !== severityFilter) show = false;
+        if (statusFilter && status !== statusFilter) show = false;
+        if (typeFilter && type !== typeFilter) show = false;
+        if (cweFilter && !cwe.toLowerCase().includes(cweFilter)) show = false;
+        if (searchFilter && !text.includes(searchFilter)) show = false;
+        
+        row.style.display = show ? '' : 'none';
+    });
+}
+
+function toggleSelectAll() {
+    const selectAll = document.getElementById('selectAll');
+    const checkboxes = document.querySelectorAll('.vuln-checkbox');
+    
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = selectAll.checked;
+    });
+}
+
+function viewVulnerabilityDetails(vulnerabilityId) {
+    currentVulnerabilityId = vulnerabilityId;
+    
+    // In a real app, this would fetch from API
+    // For now, we'll create a mock details view
+    const content = `
+        <div class="row">
+            <div class="col-12">
+                <h6>Vulnerability Information</h6>
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <table class="table table-sm">
+                                    <tr><td><strong>ID:</strong></td><td>#${vulnerabilityId}</td></tr>
+                                    <tr><td><strong>Type:</strong></td><td>SQL Injection</td></tr>
+                                    <tr><td><strong>Severity:</strong></td><td><span class="badge bg-danger">Critical</span></td></tr>
+                                    <tr><td><strong>CWE:</strong></td><td>CWE-89</td></tr>
+                                    <tr><td><strong>CVSS Score:</strong></td><td>9.3</td></tr>
+                                </table>
+                            </div>
+                            <div class="col-md-6">
+                                <table class="table table-sm">
+                                    <tr><td><strong>Status:</strong></td><td><span class="badge bg-danger">Open</span></td></tr>
+                                    <tr><td><strong>File:</strong></td><td>src/main/java/UserController.java</td></tr>
+                                    <tr><td><strong>Line:</strong></td><td>245</td></tr>
+                                    <tr><td><strong>Discovered:</strong></td><td>${new Date().toLocaleDateString()}</td></tr>
+                                    <tr><td><strong>Scan ID:</strong></td><td>#123</td></tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <h6 class="mt-4">Description</h6>
+                <div class="alert alert-danger">
+                    <strong>SQL Injection vulnerability detected:</strong> The application appears to be vulnerable to SQL injection attacks through user input validation. Unsanitized user input is being passed directly to database queries, allowing potential attackers to execute arbitrary SQL commands.
+                </div>
+                
+                <h6>Code Snippet</h6>
+                <pre class="bg-dark text-light p-3 rounded"><code>String query = "SELECT * FROM users WHERE username = '" + userInput + "'";
+PreparedStatement stmt = connection.prepareStatement(query);
+ResultSet rs = stmt.executeQuery();</code></pre>
+                
+                <h6>Remediation</h6>
+                <div class="alert alert-info">
+                    <strong>Recommended Fix:</strong> Use parameterized queries or prepared statements to prevent SQL injection. Replace direct string concatenation with parameter binding.
+                    
+                    <h6 class="mt-3">Example Fix:</h6>
+                    <pre class="bg-light text-dark p-2 rounded mt-2"><code>String query = "SELECT * FROM users WHERE username = ?";
+PreparedStatement stmt = connection.prepareStatement(query);
+stmt.setString(1, userInput);
+ResultSet rs = stmt.executeQuery();</code></pre>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.getElementById('vulnerabilityDetailsContent').innerHTML = content;
+    const modal = new bootstrap.Modal(document.getElementById('vulnerabilityDetailsModal'));
+    modal.show();
+}
+
+function updateVulnerabilityStatus(vulnerabilityId, status) {
+    // In a real app, this would make an API call
+    console.log(`Updating vulnerability ${vulnerabilityId} to status: ${status}`);
+    showAlert('success', `Vulnerability marked as ${status.replace('_', ' ')}`);
+    
+    // Simulate UI update
+    setTimeout(() => {
+        location.reload();
+    }, 1000);
+}
+
+function markAsFixed() {
+    if (currentVulnerabilityId) {
+        updateVulnerabilityStatus(currentVulnerabilityId, 'fixed');
+        bootstrap.Modal.getInstance(document.getElementById('vulnerabilityDetailsModal')).hide();
+    }
+}
+
+function markAsFalsePositive() {
+    if (currentVulnerabilityId) {
+        updateVulnerabilityStatus(currentVulnerabilityId, 'false_positive');
+        bootstrap.Modal.getInstance(document.getElementById('vulnerabilityDetailsModal')).hide();
+    }
+}
+
+function exportVulnerabilities() {
+    showAlert('info', 'Export functionality coming soon');
+}
+
+function bulkActions() {
+    const selected = document.querySelectorAll('.vuln-checkbox:checked');
+    if (selected.length === 0) {
+        showAlert('warning', 'Please select vulnerabilities to perform bulk actions');
+        return;
+    }
+    
+    showAlert('info', `Bulk actions for ${selected.length} vulnerabilities coming soon`);
+}
+
+function showAlert(type, message) {
+    const alertContainer = document.createElement('div');
+    alertContainer.className = `alert alert-${type} alert-dismissible fade show`;
+    alertContainer.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    document.querySelector('main').insertAdjacentElement('afterbegin', alertContainer);
+    
+    setTimeout(() => {
+        alertContainer.remove();
+    }, 5000);
+}
+</script>
+{% endblock %}

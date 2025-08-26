@@ -1,0 +1,2030 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security Scanner - Comprehensive Security Monitoring</title>
+    
+    <style>
+        /* Bootstrap 5 Dark Theme with Security Focus */
+        :root {
+            --bs-blue: #0d6efd;
+            --bs-indigo: #6610f2;
+            --bs-purple: #6f42c1;
+            --bs-pink: #d63384;
+            --bs-red: #dc3545;
+            --bs-orange: #fd7e14;
+            --bs-yellow: #ffc107;
+            --bs-green: #198754;
+            --bs-teal: #20c997;
+            --bs-cyan: #0dcaf0;
+            --bs-white: #fff;
+            --bs-gray: #6c757d;
+            --bs-gray-dark: #343a40;
+            --bs-gray-100: #f8f9fa;
+            --bs-gray-200: #e9ecef;
+            --bs-gray-300: #dee2e6;
+            --bs-gray-400: #ced4da;
+            --bs-gray-500: #adb5bd;
+            --bs-gray-600: #6c757d;
+            --bs-gray-700: #495057;
+            --bs-gray-800: #343a40;
+            --bs-gray-900: #212529;
+            --bs-primary: #0d6efd;
+            --bs-secondary: #6c757d;
+            --bs-success: #198754;
+            --bs-info: #0dcaf0;
+            --bs-warning: #ffc107;
+            --bs-danger: #dc3545;
+            --bs-light: #f8f9fa;
+            --bs-dark: #212529;
+        }
+
+        [data-bs-theme="dark"] {
+            --bs-body-color: #dee2e6;
+            --bs-body-bg: #212529;
+            --bs-emphasis-color: #fff;
+            --bs-secondary-color: rgba(222, 226, 230, .75);
+            --bs-secondary-bg: #343a40;
+            --bs-tertiary-color: rgba(222, 226, 230, .5);
+            --bs-tertiary-bg: #2b3035;
+            --bs-primary-bg-subtle: #031633;
+            --bs-secondary-bg-subtle: #161719;
+            --bs-success-bg-subtle: #051b11;
+            --bs-info-bg-subtle: #032830;
+            --bs-warning-bg-subtle: #332701;
+            --bs-danger-bg-subtle: #2c0b0e;
+            --bs-light-bg-subtle: #343a40;
+            --bs-dark-bg-subtle: #1a1d20;
+            --bs-primary-text-emphasis: #6ea8fe;
+            --bs-secondary-text-emphasis: #a7acb1;
+            --bs-success-text-emphasis: #75b798;
+            --bs-info-text-emphasis: #6edff6;
+            --bs-warning-text-emphasis: #ffda6a;
+            --bs-danger-text-emphasis: #ea868f;
+            --bs-light-text-emphasis: #f8f9fa;
+            --bs-dark-text-emphasis: #dee2e6;
+            --bs-primary-border-subtle: #084298;
+            --bs-secondary-border-subtle: #41464b;
+            --bs-success-border-subtle: #0f5132;
+            --bs-info-border-subtle: #087990;
+            --bs-warning-border-subtle: #997404;
+            --bs-danger-border-subtle: #842029;
+            --bs-light-border-subtle: #495057;
+            --bs-dark-border-subtle: #343a40;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial, sans-serif;
+            font-size: 1rem;
+            font-weight: 400;
+            line-height: 1.5;
+            color: var(--bs-body-color);
+            background-color: var(--bs-body-bg);
+        }
+
+        .container {
+            width: 100%;
+            padding-right: 0.75rem;
+            padding-left: 0.75rem;
+            margin-right: auto;
+            margin-left: auto;
+            max-width: 1320px;
+        }
+
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+            margin-right: -0.75rem;
+            margin-left: -0.75rem;
+        }
+
+        .col, .col-md-3, .col-md-6, .col-md-8, .col-md-9, .col-12 {
+            flex: 1 0 0%;
+            padding-right: 0.75rem;
+            padding-left: 0.75rem;
+        }
+
+        .col-md-3 { flex: 0 0 auto; width: 25%; }
+        .col-md-6 { flex: 0 0 auto; width: 50%; }
+        .col-md-8 { flex: 0 0 auto; width: 66.666667%; }
+        .col-md-9 { flex: 0 0 auto; width: 75%; }
+        .col-12 { flex: 0 0 auto; width: 100%; }
+
+        .navbar {
+            position: relative;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+            background-color: var(--bs-primary);
+            color: white;
+        }
+
+        .navbar-brand {
+            padding-top: 0.3125rem;
+            padding-bottom: 0.3125rem;
+            margin-right: 1rem;
+            font-size: 1.25rem;
+            text-decoration: none;
+            color: white;
+            font-weight: bold;
+        }
+
+        .nav {
+            display: flex;
+            flex-wrap: wrap;
+            padding-left: 0;
+            margin-bottom: 0;
+            list-style: none;
+        }
+
+        .nav-link {
+            display: block;
+            padding: 0.5rem 1rem;
+            text-decoration: none;
+            color: rgba(255, 255, 255, 0.8);
+            transition: color 0.15s ease-in-out;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: white;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 0.375rem;
+        }
+
+        .card {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            word-wrap: break-word;
+            background-color: var(--bs-secondary-bg);
+            border: 1px solid var(--bs-secondary-border-subtle);
+            border-radius: 0.375rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-body {
+            flex: 1 1 auto;
+            padding: 1rem;
+        }
+
+        .card-title {
+            margin-bottom: 0.5rem;
+            font-size: 1.25rem;
+            font-weight: 500;
+        }
+
+        .card-text {
+            margin-bottom: 1rem;
+        }
+
+        .btn {
+            display: inline-block;
+            font-weight: 400;
+            line-height: 1.5;
+            color: var(--bs-body-color);
+            text-align: center;
+            text-decoration: none;
+            vertical-align: middle;
+            cursor: pointer;
+            user-select: none;
+            background-color: transparent;
+            border: 1px solid transparent;
+            padding: 0.375rem 0.75rem;
+            font-size: 1rem;
+            border-radius: 0.375rem;
+            transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+        }
+
+        .btn-primary {
+            color: #fff;
+            background-color: var(--bs-primary);
+            border-color: var(--bs-primary);
+        }
+
+        .btn-primary:hover {
+            color: #fff;
+            background-color: #0b5ed7;
+            border-color: #0a58ca;
+        }
+
+        .btn-success {
+            color: #fff;
+            background-color: var(--bs-success);
+            border-color: var(--bs-success);
+        }
+
+        .btn-danger {
+            color: #fff;
+            background-color: var(--bs-danger);
+            border-color: var(--bs-danger);
+        }
+
+        .btn-warning {
+            color: #000;
+            background-color: var(--bs-warning);
+            border-color: var(--bs-warning);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.35em 0.65em;
+            font-size: 0.75em;
+            font-weight: 700;
+            line-height: 1;
+            color: #fff;
+            text-align: center;
+            white-space: nowrap;
+            vertical-align: baseline;
+            border-radius: 0.375rem;
+        }
+
+        .badge.bg-danger { background-color: var(--bs-danger) !important; }
+        .badge.bg-warning { background-color: var(--bs-warning) !important; color: #000; }
+        .badge.bg-info { background-color: var(--bs-info) !important; color: #000; }
+        .badge.bg-success { background-color: var(--bs-success) !important; }
+
+        .alert {
+            position: relative;
+            padding: 1rem 1rem;
+            margin-bottom: 1rem;
+            border: 1px solid transparent;
+            border-radius: 0.375rem;
+        }
+
+        .alert-info {
+            color: #055160;
+            background-color: var(--bs-info-bg-subtle);
+            border-color: var(--bs-info-border-subtle);
+        }
+
+        .table {
+            width: 100%;
+            margin-bottom: 1rem;
+            color: var(--bs-body-color);
+            vertical-align: top;
+            border-collapse: collapse;
+        }
+
+        .table th,
+        .table td {
+            padding: 0.5rem;
+            border-bottom: 1px solid var(--bs-secondary-border-subtle);
+        }
+
+        .table-dark {
+            background-color: var(--bs-dark);
+        }
+
+        .text-center { text-align: center; }
+        .text-end { text-align: right; }
+        .text-muted { color: var(--bs-secondary-color) !important; }
+        .d-flex { display: flex !important; }
+        .justify-content-between { justify-content: space-between !important; }
+        .align-items-start { align-items: flex-start !important; }
+
+        .mb-3 { margin-bottom: 1rem !important; }
+        .mb-4 { margin-bottom: 1.5rem !important; }
+        .mt-1 { margin-top: 0.25rem !important; }
+        .mt-5 { margin-top: 3rem !important; }
+        .py-4 { padding-top: 1.5rem !important; padding-bottom: 1.5rem !important; }
+        .me-2 { margin-right: 0.5rem !important; }
+        .me-auto { margin-right: auto !important; }
+
+        .h3 {
+            font-size: calc(1.3rem + 0.6vw);
+            font-weight: 500;
+            line-height: 1.2;
+        }
+
+        .h6 {
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .small {
+            font-size: 0.875em;
+        }
+
+        .bg-dark {
+            background-color: var(--bs-dark) !important;
+        }
+
+        .progress {
+            display: flex;
+            height: 1rem;
+            overflow: hidden;
+            font-size: 0.75rem;
+            background-color: var(--bs-secondary-bg);
+            border-radius: 0.375rem;
+        }
+
+        .progress-bar {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            overflow: hidden;
+            color: #fff;
+            text-align: center;
+            white-space: nowrap;
+            background-color: var(--bs-primary);
+            transition: width 0.6s ease;
+        }
+
+        .connection-status {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1050;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            font-weight: 500;
+        }
+
+        .connection-status.connected {
+            background-color: var(--bs-success);
+            color: white;
+        }
+
+        .connection-status.disconnected {
+            background-color: var(--bs-danger);
+            color: white;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin: 1rem 0;
+        }
+
+        .metric-card {
+            text-align: center;
+            padding: 1rem;
+        }
+
+        .metric-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--bs-primary);
+        }
+
+        .metric-label {
+            font-size: 0.875rem;
+            color: var(--bs-secondary-color);
+            text-transform: uppercase;
+        }
+
+        .scan-item {
+            padding: 1rem;
+            border-bottom: 1px solid var(--bs-secondary-border-subtle);
+        }
+
+        .scan-item:last-child {
+            border-bottom: none;
+        }
+
+        .status-running {
+            color: var(--bs-warning);
+        }
+
+        .status-completed {
+            color: var(--bs-success);
+        }
+
+        .status-failed {
+            color: var(--bs-danger);
+        }
+
+        .status-pending {
+            color: var(--bs-info);
+        }
+
+        .footer {
+            background-color: var(--bs-dark);
+            margin-top: 3rem;
+            padding: 1.5rem 0;
+        }
+
+        .event-item {
+            padding: 0.75rem;
+            border-bottom: 1px solid var(--bs-secondary-border-subtle);
+            transition: background-color 0.15s ease-in-out;
+        }
+
+        .event-item:hover {
+            background-color: var(--bs-tertiary-bg);
+        }
+
+        .event-item:last-child {
+            border-bottom: none;
+        }
+
+        .event-time {
+            font-size: 0.875rem;
+            color: var(--bs-secondary-color);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .col-md-3, .col-md-6, .col-md-8, .col-md-9 {
+                flex: 0 0 auto;
+                width: 100%;
+            }
+            
+            .navbar {
+                flex-direction: column;
+            }
+            
+            .nav {
+                width: 100%;
+                justify-content: center;
+                margin-top: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Connection Status Indicator -->
+    <div id="connectionStatus" class="connection-status disconnected">
+        ● Disconnected
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <a class="navbar-brand" href="#home">
+                <span style="margin-right: 0.5rem;">🛡️</span>
+                SecureCI Scanner
+            </a>
+            
+            <ul class="nav">
+                <li class="nav-item">
+                    <a class="nav-link active" href="#home" onclick="showSection('home')">
+                        <span style="margin-right: 0.25rem;">🏠</span>
+                        Home
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#scans" onclick="showSection('scans')">
+                        <span style="margin-right: 0.25rem;">🔍</span>
+                        Security Scans
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#vulnerabilities" onclick="showSection('vulnerabilities')">
+                        <span style="margin-right: 0.25rem;">⚠️</span>
+                        Vulnerabilities
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#policies" onclick="showSection('policies')">
+                        <span style="margin-right: 0.25rem;">📋</span>
+                        Policies
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container" style="margin-top: 2rem;">
+        <!-- Home Section -->
+        <section id="homeSection">
+            <div class="row mb-4">
+                <div class="col-12">
+                    <h1 class="h3 mb-3">
+                        <span style="margin-right: 0.5rem;">🛡️</span>
+                        Security Scanner
+                    </h1>
+                    <p class="text-muted">Real-time security scanning and vulnerability monitoring</p>
+                </div>
+            </div>
+
+            <!-- Real-time Metrics -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card metric-card">
+                        <div class="card-body">
+                            <div class="metric-number" id="totalScans">127</div>
+                            <div class="metric-label">Total Scans</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card metric-card">
+                        <div class="card-body">
+                            <div class="metric-number" id="activeScans">3</div>
+                            <div class="metric-label">Active Scans</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card metric-card">
+                        <div class="card-body">
+                            <div class="metric-number" id="totalVulns">45</div>
+                            <div class="metric-label">Vulnerabilities</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card metric-card">
+                        <div class="card-body">
+                            <div class="metric-number" id="criticalVulns">7</div>
+                            <div class="metric-label">Critical Issues</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Start New Scan -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">🚀 Start New Security Scan</h5>
+                            <p class="card-text">Initiate a comprehensive security analysis</p>
+                            <select id="scanType" class="form-select mb-3" style="padding: 0.375rem 0.75rem; border: 1px solid var(--bs-secondary-border-subtle); border-radius: 0.375rem; background-color: var(--bs-secondary-bg); color: var(--bs-body-color);">
+                                <option value="SAST">Static Application Security Testing (SAST)</option>
+                                <option value="DAST">Dynamic Application Security Testing (DAST)</option>
+                                <option value="IaC">Infrastructure as Code Scanning</option>
+                            </select>
+                            <input type="text" id="scanTarget" placeholder="Target (e.g., project name, URL)" 
+                                   style="width: 100%; padding: 0.375rem 0.75rem; border: 1px solid var(--bs-secondary-border-subtle); border-radius: 0.375rem; background-color: var(--bs-secondary-bg); color: var(--bs-body-color); margin-bottom: 1rem;">
+                            <button class="btn btn-primary" onclick="startScan()">Start Scan</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">📊 Vulnerability Distribution</h5>
+                            <div class="chart-container">
+                                <canvas id="severityChart" width="400" height="300"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">📈 Recent Security Events</h5>
+                            <div id="recentEvents">
+                                <div class="event-item">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div>
+                                            <span class="badge bg-danger">Critical</span>
+                                            <strong>SQL Injection vulnerability detected</strong>
+                                        </div>
+                                        <div class="event-time">2 minutes ago</div>
+                                    </div>
+                                    <div class="small text-muted mt-1">
+                                        Found in UserController.java:142 - SAST scan #127
+                                    </div>
+                                </div>
+                                <div class="event-item">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div>
+                                            <span class="badge bg-success">Info</span>
+                                            <strong>DAST scan completed successfully</strong>
+                                        </div>
+                                        <div class="event-time">15 minutes ago</div>
+                                    </div>
+                                    <div class="small text-muted mt-1">
+                                        Target: https://api.example.com - 0 new vulnerabilities
+                                    </div>
+                                </div>
+                                <div class="event-item">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div>
+                                            <span class="badge bg-warning">High</span>
+                                            <strong>Cross-Site Scripting (XSS) detected</strong>
+                                        </div>
+                                        <div class="event-time">32 minutes ago</div>
+                                    </div>
+                                    <div class="small text-muted mt-1">
+                                        Found in contact-form.html:45 - SAST scan #126
+                                    </div>
+                                </div>
+                                <div class="event-item">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div>
+                                            <span class="badge bg-info">Medium</span>
+                                            <strong>Outdated dependency identified</strong>
+                                        </div>
+                                        <div class="event-time">1 hour ago</div>
+                                    </div>
+                                    <div class="small text-muted mt-1">
+                                        lodash@4.17.19 has known vulnerabilities - Dependency scan
+                                    </div>
+                                </div>
+                                <div class="event-item">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div>
+                                            <span class="badge bg-success">Info</span>
+                                            <strong>Infrastructure scan initiated</strong>
+                                        </div>
+                                        <div class="event-time">2 hours ago</div>
+                                    </div>
+                                    <div class="small text-muted mt-1">
+                                        Scanning Kubernetes cluster configuration - IaC scan #34
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">📈 Security Trends</h5>
+                            <div class="chart-container">
+                                <canvas id="trendsChart" width="300" height="300"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Scans Section -->
+        <section id="scansSection" style="display: none;">
+            <div class="row mb-4">
+                <div class="col-12">
+                    <h1 class="h3 mb-3">
+                        <span style="margin-right: 0.5rem;">🔍</span>
+                        Security Scans
+                    </h1>
+                    <p class="text-muted">Monitor and manage security scanning activities</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <div id="scansList">
+                        <div class="scan-item">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <strong>SAST Scan #127</strong><br>
+                                    <small class="text-muted">Started 5 minutes ago</small>
+                                </div>
+                                <div class="col-md-3">
+                                    <span class="badge bg-warning status-running">Running</span>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="progress">
+                                        <div class="progress-bar" role="progressbar" style="width: 65%"></div>
+                                    </div>
+                                    <small class="text-muted">Analyzing source code...</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="scan-item">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <strong>DAST Scan #126</strong><br>
+                                    <small class="text-muted">Completed 15 minutes ago</small>
+                                </div>
+                                <div class="col-md-3">
+                                    <span class="badge bg-success status-completed">Completed</span>
+                                </div>
+                                <div class="col-md-6">
+                                    <small class="text-muted">Found 0 new vulnerabilities</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="scan-item">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <strong>SAST Scan #125</strong><br>
+                                    <small class="text-muted">Completed 32 minutes ago</small>
+                                </div>
+                                <div class="col-md-3">
+                                    <span class="badge bg-success status-completed">Completed</span>
+                                </div>
+                                <div class="col-md-6">
+                                    <small class="text-muted">Found 2 vulnerabilities (1 High, 1 Medium)</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="scan-item">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <strong>IaC Scan #34</strong><br>
+                                    <small class="text-muted">Completed 2 hours ago</small>
+                                </div>
+                                <div class="col-md-3">
+                                    <span class="badge bg-success status-completed">Completed</span>
+                                </div>
+                                <div class="col-md-6">
+                                    <small class="text-muted">Kubernetes configuration validated</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Vulnerabilities Section -->
+        <section id="vulnerabilitiesSection" style="display: none;">
+            <div class="row mb-4">
+                <div class="col-12">
+                    <h1 class="h3 mb-3">
+                        <span style="margin-right: 0.5rem;">⚠️</span>
+                        Vulnerabilities
+                    </h1>
+                    <p class="text-muted">Security issues discovered during scanning</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <table class="table table-dark">
+                        <thead>
+                            <tr>
+                                <th>Severity</th>
+                                <th>Type</th>
+                                <th>Description</th>
+                                <th>File</th>
+                                <th>CVSS</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="vulnerabilitiesTable">
+                            <!-- Dynamic vulnerabilities will be inserted here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Policies Section -->
+        <section id="policiesSection" style="display: none;">
+            <div class="row mb-4">
+                <div class="col-12">
+                    <h1 class="h3 mb-3">
+                        <span style="margin-right: 0.5rem;">📋</span>
+                        Policy Management
+                    </h1>
+                    <p class="text-muted">Manage HashiCorp Sentinel and OPA policies for security governance</p>
+                </div>
+            </div>
+
+            <!-- Policy Overview -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">Active Policies</h5>
+                            <h2 class="text-info" id="totalPolicies">12</h2>
+                            <small class="text-muted">Sentinel + OPA</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">Policy Violations</h5>
+                            <h2 class="text-danger" id="policyViolations">3</h2>
+                            <small class="text-muted">Requires attention</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">Compliance Score</h5>
+                            <h2 class="text-success" id="complianceScore">87%</h2>
+                            <small class="text-muted">Overall compliance</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">Last Check</h5>
+                            <h2 class="text-warning" id="lastPolicyCheck">2m</h2>
+                            <small class="text-muted">ago</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- HashiCorp Sentinel Policies -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">HashiCorp Sentinel Policies</h5>
+                            <button class="btn btn-success btn-sm" onclick="createSentinelPolicy()">+ New Policy</button>
+                        </div>
+                        <div class="card-body">
+                            <div id="sentinelPolicies">
+                                <!-- Sentinel policies will be loaded here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- OPA Policies -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">Open Policy Agent (OPA) Policies</h5>
+                            <button class="btn btn-success btn-sm" onclick="createOPAPolicy()">+ New Policy</button>
+                        </div>
+                        <div class="card-body">
+                            <div id="opaPolicies">
+                                <!-- OPA policies will be loaded here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Policy Violations -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">Recent Policy Violations</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="policyViolationsList">
+                                <!-- Policy violations will be loaded here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer bg-dark py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <p class="text-muted mb-0">Security Scanner @2025</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Application State - all dynamic
+        let scanData = {
+            totalScans: 127,
+            activeScans: 1, // Only the running SAST scan
+            totalVulns: 0,
+            criticalVulns: 0
+        };
+
+        let severityData = {
+            critical: 0,
+            high: 0,
+            medium: 0,
+            low: 0
+        };
+        
+        // Initialize severity data from existing vulnerabilities
+        function initializeSeverityData() {
+            severityData = { critical: 0, high: 0, medium: 0, low: 0 };
+            vulnerabilities.forEach(vuln => {
+                const severity = vuln.severity.toLowerCase();
+                if (severityData[severity] !== undefined) {
+                    severityData[severity]++;
+                }
+            });
+            scanData.totalVulns = severityData.critical + severityData.high + severityData.medium + severityData.low;
+            scanData.criticalVulns = severityData.critical;
+        }
+
+        let trendsData = {
+            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+            data: [12, 19, 8, 15, 22, 14, 16]
+        };
+
+        let runningScans = [];
+        let scanCounter = 128;
+        let lastScanTime = Date.now();
+        
+        // Dynamic vulnerabilities list
+        let vulnerabilities = [
+            {
+                id: 1,
+                severity: 'Critical',
+                type: 'SQL Injection',
+                description: 'Potential SQL injection vulnerability detected',
+                file: 'src/main/java/UserController.java:142',
+                cvss: '9.1',
+                discovered: Date.now() - 7200000 // 2 hours ago
+            },
+            {
+                id: 2,
+                severity: 'High',
+                type: 'Cross-Site Scripting',
+                description: 'XSS vulnerability in user input handling',
+                file: 'src/templates/contact-form.html:45',
+                cvss: '7.4',
+                discovered: Date.now() - 5400000 // 1.5 hours ago
+            },
+            {
+                id: 3,
+                severity: 'Medium',
+                type: 'Dependency Vulnerability',
+                description: 'Outdated lodash version with known vulnerabilities',
+                file: 'package.json',
+                cvss: '5.3',
+                discovered: Date.now() - 3600000 // 1 hour ago
+            },
+            {
+                id: 4,
+                severity: 'Low',
+                type: 'Information Disclosure',
+                description: 'Server version exposed in HTTP headers',
+                file: 'src/config/server.js:23',
+                cvss: '3.1',
+                discovered: Date.now() - 1800000 // 30 minutes ago
+            }
+        ];
+        let vulnIdCounter = 5;
+        
+        // Policy Management State
+        let policyData = {
+            totalPolicies: 12,
+            violations: 3,
+            complianceScore: 87,
+            lastCheck: Date.now() - 120000 // 2 minutes ago
+        };
+        
+        // Mock HashiCorp Sentinel Policies
+        let sentinelPolicies = [
+            {
+                id: 1,
+                name: 'terraform-security-baseline',
+                description: 'Enforces security baseline for Terraform resources',
+                status: 'active',
+                enforcement: 'hard-mandatory',
+                lastUpdated: Date.now() - 3600000, // 1 hour ago
+                violations: 0,
+                code: `# terraform-security-baseline.sentinel\n\nimport "tfplan/v2" as tfplan\nimport "strings"\n\n# Check that all EC2 instances have security groups\nec2_instances_without_sg = filter tfplan.resource_changes as _, rc {\n    rc.type is "aws_instance" and\n    rc.change.after.security_groups is empty and\n    rc.change.after.vpc_security_group_ids is empty\n}\n\n# Main rule\nmain = rule {\n    length(ec2_instances_without_sg) == 0\n}`
+            },
+            {
+                id: 2,
+                name: 'kubernetes-pod-security',
+                description: 'Validates Kubernetes pod security standards',
+                status: 'active',
+                enforcement: 'advisory',
+                lastUpdated: Date.now() - 7200000, // 2 hours ago
+                violations: 2,
+                code: `# kubernetes-pod-security.sentinel\n\nimport "kubernetes" as k8s\n\n# Check that pods don't run as root\npods_running_as_root = filter k8s.resources.pods as _, pod {\n    pod.spec.securityContext.runAsUser is 0\n}\n\n# Check for privileged containers\nprivileged_containers = filter k8s.resources.pods as _, pod {\n    any pod.spec.containers as container {\n        container.securityContext.privileged is true\n    }\n}\n\n# Main rule\nmain = rule {\n    length(pods_running_as_root) == 0 and\n    length(privileged_containers) == 0\n}`
+            },
+            {
+                id: 3,
+                name: 'aws-cost-control',
+                description: 'Controls AWS resource costs and instance types',
+                status: 'active',
+                enforcement: 'soft-mandatory',
+                lastUpdated: Date.now() - 1800000, // 30 minutes ago
+                violations: 1,
+                code: `# aws-cost-control.sentinel\n\nimport "tfplan/v2" as tfplan\n\n# Allowed instance types\nallowed_instance_types = [\n    "t3.micro", "t3.small", "t3.medium",\n    "t2.micro", "t2.small", "t2.medium"\n]\n\n# Find expensive instances\nexpensive_instances = filter tfplan.resource_changes as _, rc {\n    rc.type is "aws_instance" and\n    rc.change.after.instance_type not in allowed_instance_types\n}\n\n# Main rule\nmain = rule {\n    length(expensive_instances) == 0\n}`
+            }
+        ];
+        
+        // Mock OPA Policies
+        let opaPolicies = [
+            {
+                id: 1,
+                name: 'container-security-policy',
+                description: 'Enforces container security best practices',
+                status: 'active',
+                namespace: 'security',
+                lastUpdated: Date.now() - 5400000, // 1.5 hours ago
+                violations: 0,
+                code: `# container-security-policy.rego\n\npackage security.containers\n\ndefault allow = false\n\n# Allow containers that meet security requirements\nallow {\n    input.securityContext.runAsNonRoot == true\n    input.securityContext.readOnlyRootFilesystem == true\n    not input.securityContext.privileged\n    input.securityContext.allowPrivilegeEscalation == false\n}\n\n# Deny containers with dangerous capabilities\ndeny[msg] {\n    input.securityContext.capabilities.add[_] == "SYS_ADMIN"\n    msg := "Container cannot have SYS_ADMIN capability"\n}\n\ndeny[msg] {\n    input.image\n    not startswith(input.image, "my-registry.com/")\n    msg := "Container image must be from approved registry"\n}`
+            },
+            {
+                id: 2,
+                name: 'ingress-policy',
+                description: 'Controls ingress traffic and SSL requirements',
+                status: 'active',
+                namespace: 'networking',
+                lastUpdated: Date.now() - 10800000, // 3 hours ago
+                violations: 1,
+                code: `# ingress-policy.rego\n\npackage networking.ingress\n\n# Require HTTPS for all ingresses\nrequire_https[msg] {\n    input.kind == "Ingress"\n    not input.metadata.annotations["kubernetes.io/ingress.class"]\n    msg := "Ingress must specify ingress class"\n}\n\nrequire_https[msg] {\n    input.kind == "Ingress"\n    not input.spec.tls\n    msg := "Ingress must use TLS/HTTPS"\n}\n\n# Check for allowed hosts\nallowed_hosts := [\n    "api.mycompany.com",\n    "app.mycompany.com",\n    "admin.mycompany.com"\n]\n\ndeny[msg] {\n    input.kind == "Ingress"\n    host := input.spec.rules[_].host\n    not host in allowed_hosts\n    msg := sprintf("Host %v is not in allowed hosts list", [host])\n}`
+            },
+            {
+                id: 3,
+                name: 'rbac-policy',
+                description: 'Manages RBAC permissions and least privilege',
+                status: 'active',
+                namespace: 'security',
+                lastUpdated: Date.now() - 900000, // 15 minutes ago
+                violations: 0,
+                code: `# rbac-policy.rego\n\npackage security.rbac\n\n# Prevent cluster-admin role bindings\ndeny[msg] {\n    input.kind == "ClusterRoleBinding"\n    input.roleRef.name == "cluster-admin"\n    msg := "cluster-admin role binding is not allowed"\n}\n\n# Require justification for privileged roles\nrequire_justification[msg] {\n    input.kind == "RoleBinding"\n    privileged_roles := ["admin", "edit", "cluster-admin"]\n    input.roleRef.name in privileged_roles\n    not input.metadata.annotations["justification"]\n    msg := "Privileged role bindings must have justification annotation"\n}\n\n# Check for service account permissions\nallow_service_account {\n    input.kind == "ServiceAccount"\n    input.metadata.namespace != "kube-system"\n    input.metadata.name != "default"\n}`
+            }
+        ];
+        
+        // Mock Policy Violations
+        let policyViolations = [
+            {
+                id: 1,
+                policyName: 'kubernetes-pod-security',
+                policyType: 'sentinel',
+                severity: 'High',
+                resource: 'pod/nginx-deployment-7d8c4c8c8f-abc12',
+                namespace: 'production',
+                violation: 'Pod is running as root user (UID 0)',
+                timestamp: Date.now() - 300000, // 5 minutes ago
+                status: 'open'
+            },
+            {
+                id: 2,
+                policyName: 'ingress-policy',
+                policyType: 'opa',
+                severity: 'Medium',
+                resource: 'ingress/api-gateway',
+                namespace: 'staging',
+                violation: 'Ingress host api-staging.example.com not in allowed hosts list',
+                timestamp: Date.now() - 1800000, // 30 minutes ago
+                status: 'open'
+            },
+            {
+                id: 3,
+                policyName: 'aws-cost-control',
+                policyType: 'sentinel',
+                severity: 'Critical',
+                resource: 'aws_instance.web_server',
+                namespace: 'infrastructure',
+                violation: 'Instance type m5.xlarge exceeds allowed cost limits',
+                timestamp: Date.now() - 600000, // 10 minutes ago
+                status: 'open'
+            }
+        ];
+        
+        // Initialize with some default scans
+        function initializeDefaultScans() {
+            runningScans = [
+                {
+                    id: 127,
+                    type: 'SAST',
+                    target: 'current_project',
+                    startTime: Date.now() - 45000, // 45 seconds ago, still progressing
+                    progress: 0,
+                    status: 'running'
+                },
+                {
+                    id: 126,
+                    type: 'DAST',
+                    target: 'https://api.example.com',
+                    startTime: Date.now() - 900000, // 15 minutes ago
+                    progress: 100,
+                    status: 'completed',
+                    findings: 0
+                },
+                {
+                    id: 125,
+                    type: 'SAST',
+                    target: 'current_project',
+                    startTime: Date.now() - 1920000, // 32 minutes ago
+                    progress: 100,
+                    status: 'completed',
+                    findings: 2
+                },
+                {
+                    id: 124,
+                    type: 'IaC',
+                    target: 'kubernetes-config',
+                    startTime: Date.now() - 7200000, // 2 hours ago
+                    progress: 100,
+                    status: 'completed',
+                    findings: 0
+                }
+            ];
+        }
+
+        // Initialize Application
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Security Scanner Application Starting...');
+            
+            // Initialize components in proper order
+            initializeDefaultScans();
+            initializeSeverityData(); // Calculate from existing vulnerabilities
+            initializePolicyData(); // Initialize policy management
+            updateMetrics();
+            initializeCharts();
+            updateConnectionStatus();
+            updateScansList();
+            updateVulnerabilitiesTable();
+            loadPolicyManagement();
+            
+            // Start real-time updates - more frequent for smooth progress
+            setInterval(updateLiveData, 2000); // Every 2 seconds for better progress visibility
+            setInterval(updateConnectionStatus, 30000); // Check connection less frequently
+            
+            console.log('Security Scanner Application Initialized');
+        });
+
+        // Navigation Management
+        function showSection(sectionName) {
+            // Hide all sections
+            const sections = ['homeSection', 'scansSection', 'vulnerabilitiesSection', 'policiesSection'];
+            sections.forEach(section => {
+                const element = document.getElementById(section);
+                if (element) {
+                    element.style.display = 'none';
+                }
+            });
+            
+            // Show selected section
+            const targetSection = document.getElementById(sectionName + 'Section');
+            if (targetSection) {
+                targetSection.style.display = 'block';
+            }
+            
+            // Update navigation
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            
+            const activeLink = document.querySelector(`[href="#${sectionName}"]`);
+            if (activeLink) {
+                activeLink.classList.add('active');
+            }
+            
+            console.log(`Switched to section: ${sectionName}`);
+        }
+
+        // Connection Status Management
+        function updateConnectionStatus() {
+            const statusElement = document.getElementById('connectionStatus');
+            // Keep connection stable - only change rarely
+            const isConnected = Math.random() > 0.02; // 98% connection rate
+            
+            if (isConnected) {
+                statusElement.textContent = '● Connected';
+                statusElement.className = 'connection-status connected';
+            } else {
+                statusElement.textContent = '● Disconnected';
+                statusElement.className = 'connection-status disconnected';
+            }
+        }
+
+        // Data Management
+        function updateMetrics() {
+            document.getElementById('totalScans').textContent = scanData.totalScans;
+            document.getElementById('activeScans').textContent = scanData.activeScans;
+            document.getElementById('totalVulns').textContent = scanData.totalVulns;
+            document.getElementById('criticalVulns').textContent = scanData.criticalVulns;
+        }
+
+        function updateLiveData() {
+            // Update running scans (this handles progress and completion)
+            updateRunningScans();
+            
+            // Update trends data periodically (less frequently)
+            if (Math.random() > 0.95) {
+                trendsData.data.shift();
+                trendsData.data.push(scanData.totalVulns || Math.floor(Math.random() * 15) + 5);
+                initializeCharts(); // Redraw charts when trends change
+            }
+            
+            // Update metrics to reflect current state
+            updateMetrics();
+            
+            if (Math.random() > 0.9) {
+                console.log('Data updated via polling');
+            }
+        }
+
+        // Scan Management
+        function startScan() {
+            const scanType = document.getElementById('scanType').value;
+            const target = document.getElementById('scanTarget').value || 'current_project';
+            
+            console.log(`Starting ${scanType} scan on ${target}`);
+            
+            // Create new scan
+            const newScan = {
+                id: scanCounter++,
+                type: scanType,
+                target: target,
+                startTime: Date.now(),
+                progress: 0,
+                status: 'running'
+            };
+            
+            runningScans.push(newScan);
+            scanData.activeScans += 1;
+            scanData.totalScans += 1;
+            updateMetrics();
+            updateScansList();
+            
+            // Show success message
+            showAlert(`${scanType} scan started successfully for target: ${target}`, 'success');
+        }
+        
+        function updateRunningScans() {
+            runningScans.forEach((scan, index) => {
+                if (scan.status === 'running') {
+                    // Update progress smoothly
+                    const elapsed = Date.now() - scan.startTime;
+                    const totalTime = 60000; // 1 minute scan time
+                    const newProgress = Math.min(Math.floor((elapsed / totalTime) * 100), 100);
+                    
+                    // Only update if progress actually changed for smoother updates
+                    if (newProgress > scan.progress) {
+                        scan.progress = newProgress;
+                    }
+                    
+                    // Complete scan when progress reaches 100%
+                    if (scan.progress >= 100) {
+                        scan.status = 'completed';
+                        scanData.activeScans = Math.max(0, scanData.activeScans - 1);
+                        
+                        // Generate realistic findings based on scan type
+                        let findings = 0;
+                        if (scan.type === 'SAST') {
+                            findings = Math.floor(Math.random() * 4) + 1; // 1-4 findings
+                        } else if (scan.type === 'DAST') {
+                            findings = Math.floor(Math.random() * 3); // 0-2 findings
+                        } else if (scan.type === 'IaC') {
+                            findings = Math.floor(Math.random() * 2); // 0-1 findings
+                        }
+                        
+                        scan.findings = findings;
+                        
+                        if (findings > 0) {
+                            addNewEvent(scan.type, findings);
+                            
+                            // Add actual vulnerabilities to the vulnerabilities section
+                            const severities = ['Critical', 'High', 'Medium', 'Low'];
+                            const weights = [0.1, 0.2, 0.4, 0.3]; // More medium/low, fewer critical
+                            
+                            for (let i = 0; i < findings; i++) {
+                                const rand = Math.random();
+                                let severity = 'Low';
+                                if (rand < weights[0]) severity = 'Critical';
+                                else if (rand < weights[0] + weights[1]) severity = 'High';
+                                else if (rand < weights[0] + weights[1] + weights[2]) severity = 'Medium';
+                                
+                                addNewVulnerability(scan.type, severity);
+                            }
+                        }
+                        
+                        showAlert(`${scan.type} scan completed - Found ${findings} ${findings === 1 ? 'issue' : 'issues'}`, findings > 0 ? 'warning' : 'success');
+                        updateMetrics();
+                    }
+                }
+            });
+            
+            // Remove old completed scans (keep last 10)
+            if (runningScans.length > 10) {
+                runningScans = runningScans.slice(-10);
+            }
+            
+            updateScansList();
+        }
+        
+        function updateScansList() {
+            const scansList = document.getElementById('scansList');
+            if (!scansList) return;
+            
+            scansList.innerHTML = '';
+            
+            // Show running scans first
+            runningScans.slice(-5).reverse().forEach(scan => {
+                const timeAgo = Math.max(0, Math.floor((Date.now() - scan.startTime) / 60000));
+                const secondsAgo = Math.max(0, Math.floor((Date.now() - scan.startTime) / 1000));
+                const scanItem = document.createElement('div');
+                scanItem.className = 'scan-item';
+                
+                if (scan.status === 'running') {
+                    let statusMessage = 'Analyzing source code...';
+                    let progressDetail = `${scan.progress}% complete`;
+                    
+                    if (scan.type === 'DAST') {
+                        statusMessage = 'Testing web application...';
+                        progressDetail = `${scan.progress}% - Testing endpoints`;
+                    } else if (scan.type === 'IaC') {
+                        statusMessage = 'Validating infrastructure config...';
+                        progressDetail = `${scan.progress}% - Checking policies`;
+                    } else if (scan.type === 'SAST') {
+                        progressDetail = `${scan.progress}% - Scanning ${scan.target}`;
+                    }
+                    
+                    const timeDisplay = timeAgo > 0 ? `${timeAgo} minutes ago` : `${secondsAgo} seconds ago`;
+                    
+                    scanItem.innerHTML = `
+                        <div class="row">
+                            <div class="col-md-3">
+                                <strong>${scan.type} Scan #${scan.id}</strong><br>
+                                <small class="text-muted">Started ${timeDisplay}</small>
+                            </div>
+                            <div class="col-md-3">
+                                <span class="badge bg-warning status-running">Running</span>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="progress mb-1">
+                                    <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                                         role="progressbar" style="width: ${scan.progress}%"></div>
+                                </div>
+                                <small class="text-muted">${progressDetail}</small>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    const findings = scan.findings !== undefined ? scan.findings : 0;
+                    let resultMessage = '';
+                    
+                    if (findings === 0) {
+                        if (scan.type === 'DAST') {
+                            resultMessage = `Target: ${scan.target} - No vulnerabilities found`;
+                        } else if (scan.type === 'IaC') {
+                            resultMessage = `${scan.target} configuration validated - Clean`;
+                        } else {
+                            resultMessage = 'No vulnerabilities found';
+                        }
+                    } else {
+                        if (scan.type === 'SAST') {
+                            resultMessage = `Found ${findings} code ${findings === 1 ? 'issue' : 'issues'} in ${scan.target}`;
+                        } else if (scan.type === 'DAST') {
+                            resultMessage = `Found ${findings} web ${findings === 1 ? 'vulnerability' : 'vulnerabilities'}`;
+                        } else {
+                            resultMessage = `Found ${findings} configuration ${findings === 1 ? 'issue' : 'issues'}`;
+                        }
+                    }
+                    
+                    const timeDisplay = timeAgo > 0 ? `${timeAgo} minutes ago` : `${secondsAgo} seconds ago`;
+                    
+                    scanItem.innerHTML = `
+                        <div class="row">
+                            <div class="col-md-3">
+                                <strong>${scan.type} Scan #${scan.id}</strong><br>
+                                <small class="text-muted">Completed ${timeDisplay}</small>
+                            </div>
+                            <div class="col-md-3">
+                                <span class="badge ${findings > 0 ? 'bg-warning' : 'bg-success'} status-completed">
+                                    ${findings > 0 ? 'Issues Found' : 'Clean'}
+                                </span>
+                            </div>
+                            <div class="col-md-6">
+                                <small class="text-muted">${resultMessage}</small>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                scansList.appendChild(scanItem);
+            });
+        }
+        
+        function addNewEvent(scanType, findings) {
+            const eventsContainer = document.getElementById('recentEvents');
+            if (!eventsContainer) return;
+            
+            const severityTypes = ['Critical', 'High', 'Medium', 'Low'];
+            const severityColors = ['bg-danger', 'bg-warning', 'bg-info', 'bg-success'];
+            const eventTypes = [
+                'SQL Injection vulnerability detected',
+                'Cross-Site Scripting (XSS) found',
+                'Insecure dependency identified',
+                'Authentication bypass detected',
+                'Information disclosure found'
+            ];
+            
+            for (let i = 0; i < findings; i++) {
+                const severityIndex = Math.floor(Math.random() * severityTypes.length);
+                const eventType = eventTypes[Math.floor(Math.random() * eventTypes.length)];
+                
+                const newEvent = document.createElement('div');
+                newEvent.className = 'event-item';
+                newEvent.innerHTML = `
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <span class="badge ${severityColors[severityIndex]}">${severityTypes[severityIndex]}</span>
+                            <strong>${eventType}</strong>
+                        </div>
+                        <div class="event-time">Just now</div>
+                    </div>
+                    <div class="small text-muted mt-1">
+                        Found in scan #${scanCounter - 1} - ${scanType} analysis
+                    </div>
+                `;
+                
+                // Insert at the beginning
+                eventsContainer.insertBefore(newEvent, eventsContainer.firstChild);
+                
+                // Remove old events if too many
+                if (eventsContainer.children.length > 8) {
+                    eventsContainer.removeChild(eventsContainer.lastChild);
+                }
+            }
+        }
+        
+        function showVulnDetails(vulnType, severity, file) {
+            const details = {
+                'SQL Injection': {
+                    description: 'SQL injection vulnerability allows attackers to execute malicious SQL statements.',
+                    recommendation: 'Use parameterized queries and input validation.',
+                    cwe: 'CWE-89'
+                },
+                'Cross-Site Scripting': {
+                    description: 'XSS vulnerability allows execution of malicious scripts in user browsers.',
+                    recommendation: 'Implement proper input sanitization and output encoding.',
+                    cwe: 'CWE-79'
+                },
+                'Dependency Vulnerability': {
+                    description: 'Outdated dependency contains known security vulnerabilities.',
+                    recommendation: 'Update to the latest secure version of the dependency.',
+                    cwe: 'CWE-1104'
+                },
+                'Information Disclosure': {
+                    description: 'Sensitive information is exposed to unauthorized users.',
+                    recommendation: 'Remove or restrict access to sensitive information.',
+                    cwe: 'CWE-200'
+                }
+            };
+            
+            const detail = details[vulnType] || { description: 'No details available', recommendation: 'Review manually', cwe: 'N/A' };
+            
+            alert(`🔍 Vulnerability Details\n\nType: ${vulnType}\nSeverity: ${severity}\nFile: ${file}\n\nDescription: ${detail.description}\n\nRecommendation: ${detail.recommendation}\n\nCWE: ${detail.cwe}`);
+        }
+        
+        // Vulnerability Management
+        function updateVulnerabilitiesTable() {
+            const tbody = document.getElementById('vulnerabilitiesTable');
+            if (!tbody) return;
+            
+            tbody.innerHTML = '';
+            
+            vulnerabilities.forEach(vuln => {
+                const timeAgo = Math.floor((Date.now() - vuln.discovered) / 60000);
+                const severityClass = {
+                    'Critical': 'bg-danger',
+                    'High': 'bg-warning', 
+                    'Medium': 'bg-info',
+                    'Low': 'bg-success'
+                }[vuln.severity] || 'bg-secondary';
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><span class="badge ${severityClass}">${vuln.severity}</span></td>
+                    <td>${vuln.type}</td>
+                    <td>${vuln.description}</td>
+                    <td>${vuln.file}</td>
+                    <td>${vuln.cvss}</td>
+                    <td><button class="btn btn-primary" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;" onclick="showVulnDetails('${vuln.type}', '${vuln.severity}', '${vuln.file}')">View Details</button></td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+        
+        function addNewVulnerability(scanType, severity, description) {
+            const vulnTypes = {
+                'SAST': [
+                    'SQL Injection',
+                    'Cross-Site Scripting',
+                    'Command Injection',
+                    'Path Traversal',
+                    'Insecure Deserialization'
+                ],
+                'DAST': [
+                    'Authentication Bypass',
+                    'Session Fixation',
+                    'Broken Access Control',
+                    'Security Misconfiguration',
+                    'XML External Entity'
+                ],
+                'IaC': [
+                    'Insecure Port Configuration',
+                    'Privilege Escalation',
+                    'Network Policy Violation',
+                    'Secret Exposure',
+                    'Resource Limit Missing'
+                ]
+            };
+            
+            const files = {
+                'SAST': [
+                    'src/main/java/SecurityController.java',
+                    'src/components/LoginForm.tsx',
+                    'lib/authentication.py',
+                    'models/User.js',
+                    'controllers/apiController.php'
+                ],
+                'DAST': [
+                    '/api/login',
+                    '/admin/dashboard',
+                    'https://api.example.com/v1/users',
+                    '/webhook/payment',
+                    '/api/upload'
+                ],
+                'IaC': [
+                    'kubernetes/deployment.yaml',
+                    'docker-compose.yml', 
+                    'terraform/main.tf',
+                    'helm/values.yaml',
+                    'ansible/playbook.yml'
+                ]
+            };
+            
+            const typeList = vulnTypes[scanType] || vulnTypes['SAST'];
+            const fileList = files[scanType] || files['SAST'];
+            
+            const type = typeList[Math.floor(Math.random() * typeList.length)];
+            const file = fileList[Math.floor(Math.random() * fileList.length)] + ':' + (Math.floor(Math.random() * 200) + 10);
+            
+            const cvssScores = {
+                'Critical': (Math.random() * 1.9 + 8.1).toFixed(1), // 8.1-10.0
+                'High': (Math.random() * 2.9 + 6.1).toFixed(1),     // 6.1-9.0 
+                'Medium': (Math.random() * 2.9 + 4.1).toFixed(1),   // 4.1-7.0
+                'Low': (Math.random() * 3.9 + 0.1).toFixed(1)       // 0.1-4.0
+            };
+            
+            const newVuln = {
+                id: vulnIdCounter++,
+                severity: severity,
+                type: type,
+                description: description || `${type} vulnerability detected in ${scanType} scan`,
+                file: file,
+                cvss: cvssScores[severity] || '5.0',
+                discovered: Date.now()
+            };
+            
+            vulnerabilities.unshift(newVuln); // Add to beginning
+            
+            // Keep only latest 20 vulnerabilities
+            if (vulnerabilities.length > 20) {
+                vulnerabilities = vulnerabilities.slice(0, 20);
+                
+                // Recalculate severity data after trimming
+                initializeSeverityData();
+            }
+            
+            updateVulnerabilitiesTable();
+            
+            // Update severity counts
+            const severityKey = severity.toLowerCase();
+            if (severityData[severityKey] !== undefined) {
+                severityData[severityKey]++;
+            }
+            
+            // Recalculate totals
+            scanData.totalVulns = severityData.critical + severityData.high + severityData.medium + severityData.low;
+            scanData.criticalVulns = severityData.critical;
+            
+            // Update charts with new data
+            initializeCharts();
+            
+            return newVuln;
+        }
+
+        // Policy Management Functions
+        function initializePolicyData() {
+            // Update policy metrics from data
+            policyData.totalPolicies = sentinelPolicies.length + opaPolicies.length;
+            policyData.violations = policyViolations.filter(v => v.status === 'open').length;
+            
+            // Calculate compliance score
+            const totalChecks = policyData.totalPolicies * 10; // Assume each policy has 10 checks
+            const violations = policyData.violations;
+            policyData.complianceScore = Math.max(0, Math.round((totalChecks - violations * 5) / totalChecks * 100));
+        }
+        
+        function loadPolicyManagement() {
+            updatePolicyMetrics();
+            loadSentinelPolicies();
+            loadOPAPolicies();
+            loadPolicyViolations();
+        }
+        
+        function updatePolicyMetrics() {
+            document.getElementById('totalPolicies').textContent = policyData.totalPolicies;
+            document.getElementById('policyViolations').textContent = policyData.violations;
+            document.getElementById('complianceScore').textContent = policyData.complianceScore + '%';
+            
+            const minutes = Math.floor((Date.now() - policyData.lastCheck) / 60000);
+            document.getElementById('lastPolicyCheck').textContent = minutes + 'm';
+        }
+        
+        function loadSentinelPolicies() {
+            const container = document.getElementById('sentinelPolicies');
+            if (!container) return;
+            
+            container.innerHTML = '';
+            
+            sentinelPolicies.forEach(policy => {
+                const policyCard = document.createElement('div');
+                policyCard.className = 'border rounded p-3 mb-3';
+                policyCard.style.backgroundColor = 'var(--bs-secondary-bg)';
+                
+                const statusColor = policy.status === 'active' ? 'success' : 'secondary';
+                const violationColor = policy.violations > 0 ? 'danger' : 'success';
+                const timeAgo = Math.floor((Date.now() - policy.lastUpdated) / 60000);
+                
+                policyCard.innerHTML = `
+                    <div class="row">
+                        <div class="col-md-8">
+                            <h6 class="mb-1">${policy.name}</h6>
+                            <p class="text-muted small mb-2">${policy.description}</p>
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="badge bg-${statusColor}">${policy.status}</span>
+                                <span class="badge bg-info">${policy.enforcement}</span>
+                                <span class="badge bg-${violationColor}">${policy.violations} violations</span>
+                                <small class="text-muted">Updated ${timeAgo}m ago</small>
+                            </div>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <button class="btn btn-outline-primary btn-sm me-1" onclick="viewSentinelPolicy(${policy.id})">View Code</button>
+                            <button class="btn btn-outline-secondary btn-sm me-1" onclick="editSentinelPolicy(${policy.id})">Edit</button>
+                            <button class="btn btn-outline-warning btn-sm" onclick="testSentinelPolicy(${policy.id})">Test</button>
+                        </div>
+                    </div>
+                `;
+                
+                container.appendChild(policyCard);
+            });
+        }
+        
+        function loadOPAPolicies() {
+            const container = document.getElementById('opaPolicies');
+            if (!container) return;
+            
+            container.innerHTML = '';
+            
+            opaPolicies.forEach(policy => {
+                const policyCard = document.createElement('div');
+                policyCard.className = 'border rounded p-3 mb-3';
+                policyCard.style.backgroundColor = 'var(--bs-secondary-bg)';
+                
+                const statusColor = policy.status === 'active' ? 'success' : 'secondary';
+                const violationColor = policy.violations > 0 ? 'danger' : 'success';
+                const timeAgo = Math.floor((Date.now() - policy.lastUpdated) / 60000);
+                
+                policyCard.innerHTML = `
+                    <div class="row">
+                        <div class="col-md-8">
+                            <h6 class="mb-1">${policy.name}</h6>
+                            <p class="text-muted small mb-2">${policy.description}</p>
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="badge bg-${statusColor}">${policy.status}</span>
+                                <span class="badge bg-secondary">${policy.namespace}</span>
+                                <span class="badge bg-${violationColor}">${policy.violations} violations</span>
+                                <small class="text-muted">Updated ${timeAgo}m ago</small>
+                            </div>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <button class="btn btn-outline-primary btn-sm me-1" onclick="viewOPAPolicy(${policy.id})">View Code</button>
+                            <button class="btn btn-outline-secondary btn-sm me-1" onclick="editOPAPolicy(${policy.id})">Edit</button>
+                            <button class="btn btn-outline-warning btn-sm" onclick="testOPAPolicy(${policy.id})">Test</button>
+                        </div>
+                    </div>
+                `;
+                
+                container.appendChild(policyCard);
+            });
+        }
+        
+        function loadPolicyViolations() {
+            const container = document.getElementById('policyViolationsList');
+            if (!container) return;
+            
+            container.innerHTML = '';
+            
+            if (policyViolations.length === 0) {
+                container.innerHTML = '<p class="text-muted text-center">No policy violations found</p>';
+                return;
+            }
+            
+            policyViolations.forEach(violation => {
+                const violationCard = document.createElement('div');
+                violationCard.className = 'border rounded p-3 mb-3';
+                violationCard.style.backgroundColor = 'var(--bs-secondary-bg)';
+                
+                const severityColor = {
+                    'Critical': 'danger',
+                    'High': 'warning', 
+                    'Medium': 'info',
+                    'Low': 'success'
+                }[violation.severity] || 'secondary';
+                
+                const timeAgo = Math.floor((Date.now() - violation.timestamp) / 60000);
+                const typeIcon = violation.policyType === 'sentinel' ? '🏛️' : '🔒';
+                
+                violationCard.innerHTML = `
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="d-flex align-items-center mb-2">
+                                <span style="margin-right: 0.5rem;">${typeIcon}</span>
+                                <h6 class="mb-0">${violation.policyName}</h6>
+                                <span class="badge bg-${severityColor} ms-2">${violation.severity}</span>
+                            </div>
+                            <p class="mb-1"><strong>Resource:</strong> ${violation.resource}</p>
+                            <p class="mb-1"><strong>Namespace:</strong> ${violation.namespace}</p>
+                            <p class="text-muted small mb-0">${violation.violation}</p>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <small class="text-muted d-block">${timeAgo} minutes ago</small>
+                            <div class="mt-2">
+                                <button class="btn btn-outline-primary btn-sm me-1" onclick="viewViolationDetails(${violation.id})">Details</button>
+                                <button class="btn btn-outline-success btn-sm" onclick="resolveViolation(${violation.id})">Resolve</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                container.appendChild(violationCard);
+            });
+        }
+        
+        function createSentinelPolicy() {
+            const name = prompt('Enter policy name:');
+            if (!name) return;
+            
+            const description = prompt('Enter policy description:');
+            if (!description) return;
+            
+            const newPolicy = {
+                id: sentinelPolicies.length + 1,
+                name: name,
+                description: description,
+                status: 'active',
+                enforcement: 'advisory',
+                lastUpdated: Date.now(),
+                violations: 0,
+                code: `# ${name}.sentinel\n\n# Add your Sentinel policy code here\n\nmain = rule {\n    true\n}`
+            };
+            
+            sentinelPolicies.push(newPolicy);
+            policyData.totalPolicies++;
+            loadPolicyManagement();
+            showAlert(`Sentinel policy "${name}" created successfully`, 'success');
+        }
+        
+        function createOPAPolicy() {
+            const name = prompt('Enter policy name:');
+            if (!name) return;
+            
+            const description = prompt('Enter policy description:');
+            if (!description) return;
+            
+            const namespace = prompt('Enter namespace (e.g., security, networking):') || 'default';
+            
+            const newPolicy = {
+                id: opaPolicies.length + 1,
+                name: name,
+                description: description,
+                status: 'active',
+                namespace: namespace,
+                lastUpdated: Date.now(),
+                violations: 0,
+                code: `# ${name}.rego\n\npackage ${namespace}.${name.replace(/[^a-zA-Z0-9]/g, '')}\n\n# Add your OPA policy code here\n\ndefault allow = false\n\nallow {\n    # Define your allow rules here\n    true\n}`
+            };
+            
+            opaPolicies.push(newPolicy);
+            policyData.totalPolicies++;
+            loadPolicyManagement();
+            showAlert(`OPA policy "${name}" created successfully`, 'success');
+        }
+        
+        function viewSentinelPolicy(id) {
+            const policy = sentinelPolicies.find(p => p.id === id);
+            if (!policy) return;
+            
+            alert(`HashiCorp Sentinel Policy: ${policy.name}\n\nDescription: ${policy.description}\nEnforcement: ${policy.enforcement}\nStatus: ${policy.status}\n\nCode:\n${policy.code}`);
+        }
+        
+        function viewOPAPolicy(id) {
+            const policy = opaPolicies.find(p => p.id === id);
+            if (!policy) return;
+            
+            alert(`OPA Policy: ${policy.name}\n\nDescription: ${policy.description}\nNamespace: ${policy.namespace}\nStatus: ${policy.status}\n\nCode:\n${policy.code}`);
+        }
+        
+        function editSentinelPolicy(id) {
+            const policy = sentinelPolicies.find(p => p.id === id);
+            if (!policy) return;
+            
+            const newCode = prompt(`Edit Sentinel policy "${policy.name}" code:`, policy.code);
+            if (newCode !== null && newCode !== policy.code) {
+                policy.code = newCode;
+                policy.lastUpdated = Date.now();
+                loadPolicyManagement();
+                showAlert(`Sentinel policy "${policy.name}" updated`, 'success');
+            }
+        }
+        
+        function editOPAPolicy(id) {
+            const policy = opaPolicies.find(p => p.id === id);
+            if (!policy) return;
+            
+            const newCode = prompt(`Edit OPA policy "${policy.name}" code:`, policy.code);
+            if (newCode !== null && newCode !== policy.code) {
+                policy.code = newCode;
+                policy.lastUpdated = Date.now();
+                loadPolicyManagement();
+                showAlert(`OPA policy "${policy.name}" updated`, 'success');
+            }
+        }
+        
+        function testSentinelPolicy(id) {
+            const policy = sentinelPolicies.find(p => p.id === id);
+            if (!policy) return;
+            
+            showAlert(`Testing Sentinel policy "${policy.name}"...\\n\\nTest Result: PASS\\nExecution time: 23ms\\nMemory usage: 1.2MB`, 'info');
+        }
+        
+        function testOPAPolicy(id) {
+            const policy = opaPolicies.find(p => p.id === id);
+            if (!policy) return;
+            
+            showAlert(`Testing OPA policy "${policy.name}"...\\n\\nTest Result: PASS\\nDecision: allow = true\\nExecution time: 15ms`, 'info');
+        }
+        
+        function viewViolationDetails(id) {
+            const violation = policyViolations.find(v => v.id === id);
+            if (!violation) return;
+            
+            alert(`Policy Violation Details\\n\\nPolicy: ${violation.policyName} (${violation.policyType})\\nSeverity: ${violation.severity}\\nResource: ${violation.resource}\\nNamespace: ${violation.namespace}\\n\\nViolation: ${violation.violation}\\n\\nTimestamp: ${new Date(violation.timestamp).toLocaleString()}`);
+        }
+        
+        function resolveViolation(id) {
+            const violation = policyViolations.find(v => v.id === id);
+            if (!violation) return;
+            
+            if (confirm(`Mark violation "${violation.violation}" as resolved?`)) {
+                violation.status = 'resolved';
+                policyData.violations--;
+                policyData.complianceScore = Math.min(100, policyData.complianceScore + 2);
+                loadPolicyManagement();
+                showAlert('Policy violation resolved', 'success');
+            }
+        }
+
+        function showAlert(message, type) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type}`;
+            alertDiv.style.position = 'fixed';
+            alertDiv.style.top = '80px';
+            alertDiv.style.right = '20px';
+            alertDiv.style.zIndex = '1060';
+            alertDiv.style.minWidth = '300px';
+            alertDiv.textContent = message;
+            
+            document.body.appendChild(alertDiv);
+            
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 5000);
+        }
+
+        // Chart Initialization (Simplified)
+        function initializeCharts() {
+            // Severity Chart
+            const severityCtx = document.getElementById('severityChart');
+            if (severityCtx) {
+                drawPieChart(severityCtx, severityData);
+            }
+            
+            // Trends Chart
+            const trendsCtx = document.getElementById('trendsChart');
+            if (trendsCtx) {
+                drawLineChart(trendsCtx, trendsData);
+            }
+        }
+
+        function drawPieChart(canvas, data) {
+            const ctx = canvas.getContext('2d');
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const radius = Math.min(centerX, centerY) - 20;
+            
+            const total = Object.values(data).reduce((sum, value) => sum + value, 0);
+            const colors = ['#dc3545', '#fd7e14', '#ffc107', '#198754'];
+            const labels = ['Critical', 'High', 'Medium', 'Low'];
+            
+            let currentAngle = 0;
+            Object.values(data).forEach((value, index) => {
+                const sliceAngle = (value / total) * 2 * Math.PI;
+                
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, radius, currentAngle, currentAngle + sliceAngle);
+                ctx.lineTo(centerX, centerY);
+                ctx.fillStyle = colors[index];
+                ctx.fill();
+                
+                // Add labels
+                const labelAngle = currentAngle + sliceAngle / 2;
+                const labelX = centerX + Math.cos(labelAngle) * (radius * 0.7);
+                const labelY = centerY + Math.sin(labelAngle) * (radius * 0.7);
+                
+                ctx.fillStyle = '#fff';
+                ctx.font = '12px system-ui';
+                ctx.textAlign = 'center';
+                ctx.fillText(value, labelX, labelY);
+                
+                currentAngle += sliceAngle;
+            });
+        }
+
+        function drawLineChart(canvas, data) {
+            const ctx = canvas.getContext('2d');
+            const padding = 40;
+            const chartWidth = canvas.width - 2 * padding;
+            const chartHeight = canvas.height - 2 * padding;
+            
+            const maxValue = Math.max(...data.data);
+            const stepX = chartWidth / (data.labels.length - 1);
+            
+            // Draw axes
+            ctx.strokeStyle = '#6c757d';
+            ctx.beginPath();
+            ctx.moveTo(padding, padding);
+            ctx.lineTo(padding, canvas.height - padding);
+            ctx.lineTo(canvas.width - padding, canvas.height - padding);
+            ctx.stroke();
+            
+            // Draw data line
+            ctx.strokeStyle = '#0d6efd';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            
+            data.data.forEach((value, index) => {
+                const x = padding + index * stepX;
+                const y = canvas.height - padding - (value / maxValue) * chartHeight;
+                
+                if (index === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+                
+                // Draw data points
+                ctx.fillStyle = '#0d6efd';
+                ctx.beginPath();
+                ctx.arc(x, y, 4, 0, 2 * Math.PI);
+                ctx.fill();
+            });
+            
+            ctx.stroke();
+            
+            // Draw labels
+            ctx.fillStyle = '#dee2e6';
+            ctx.font = '12px system-ui';
+            ctx.textAlign = 'center';
+            
+            data.labels.forEach((label, index) => {
+                const x = padding + index * stepX;
+                const y = canvas.height - padding + 20;
+                ctx.fillText(label, x, y);
+            });
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey || e.metaKey) {
+                switch(e.key) {
+                    case '1':
+                        e.preventDefault();
+                        showSection('home');
+                        break;
+                    case '2':
+                        e.preventDefault();
+                        showSection('scans');
+                        break;
+                    case '3':
+                        e.preventDefault();
+                        showSection('vulnerabilities');
+                        break;
+                }
+            }
+        });
+
+        // Resize charts on window resize
+        window.addEventListener('resize', function() {
+            setTimeout(initializeCharts, 100);
+        });
+
+        console.log('Security Scanner Application Initialized');
+        console.log('Available keyboard shortcuts: Ctrl+1 (Home), Ctrl+2 (Scans), Ctrl+3 (Vulnerabilities)');
+    </script>
+</body>
+</html>

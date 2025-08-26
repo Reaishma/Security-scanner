@@ -1,6 +1,34 @@
 # Security Scanner Application
 
-A comprehensive Flask-based security scanning web application with real-time security scanning and vulnerability monitoring capabilities. The application  featuring multi-tool security scanning (SAST, DAST,Infrastructure as Code scanning), enabling security teams to manage and track vulnerabilities across their applications. The system features real-time updates, automated scanning capabilities, and integration with enterprise security tools like SonarQube, Acunetix, Veracode, and OWASP ZAP and build, deployment using GitHub CI/CD pipeline.
+A comprehensive Flask-based security scanning web application with real-time security scanning and vulnerability monitoring capabilities. This application  featuring multi-tool security scanning (SAST, DAST,Infrastructure as Code scanning), enabling security teams to manage and track vulnerabilities across their applications. The system features real-time updates, automated scanning capabilities, and integration with enterprise security tools like SonarQube, Acunetix, Veracode, and OWASP ZAP and also  build, deployment using GitHub CI/CD pipeline, cloud infrastructure.
+
+## System Architecture
+
+### Frontend Architecture
+- **Template Engine**: Jinja2 templates with a modular base template system
+- **UI Framework**: Bootstrap 5 with dark theme support for modern, responsive design
+- **Interactive Components**: Chart.js for data visualization, Feather Icons for consistent iconography
+- **Real-time Updates**: Server-Sent Events (SSE) with fallback polling mechanism for live scan progress and vulnerability updates
+- **Progressive Enhancement**: JavaScript modules for dashboard analytics, real-time updates, and interactive scanning controls
+
+### Backend Architecture
+- **Web Framework**: Flask with SQLAlchemy ORM for database operations
+- **Database Design**: Relational model with entities for Users, SecurityScans, Vulnerabilities, and ScanMetrics
+- **Background Processing**: APScheduler for periodic tasks and threading for long-running scan operations
+- **Security Integration Layer**: Centralized SecurityScanner class that orchestrates multiple scanning tools
+- **Configuration Management**: Environment-based configuration with support for development and production settings
+
+### Data Storage Solutions
+- **Primary Database**: SQLite for development with PostgreSQL production readiness
+- **Schema Design**: Normalized structure with proper foreign key relationships between scans and vulnerabilities
+- **Connection Management**: Connection pooling with automatic reconnection and health checks
+- **Data Retention**: Configurable retention policies for scan results and vulnerability data
+
+### Authentication and Authorization
+- **User Management**: Flask-Login integration with role-based access control
+- **Security Hardening**: CSRF protection, secure session management, and password hashing
+- **Session Configuration**: HTTP-only cookies with secure flags and configurable lifetime
+- **Admin Controls**: Administrative interface for user management and system configuration
 
 ## Features
 
@@ -404,8 +432,6 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 For questions, issues, or feature requests:
 
 - Create an issue on GitHub
-- Check the documentation wiki
-- Review existing discussions and solutions
 
 ## Changelog
 

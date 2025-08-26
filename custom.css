@@ -1,0 +1,307 @@
+/* Custom styles for the Security Scanner Dashboard */
+
+:root {
+    --bs-border-radius: 0.5rem;
+    --bs-box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.3);
+    --bs-box-shadow-lg: 0 1rem 3rem rgba(0, 0, 0, 0.4);
+}
+
+/* Custom animations */
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+@keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Progress bars with animation */
+.progress-bar {
+    transition: width 0.3s ease-in-out;
+}
+
+.scan-progress {
+    animation: fadeIn 0.3s ease-in-out;
+    border-left: 3px solid var(--bs-primary);
+    padding-left: 1rem;
+    margin-left: 0.5rem;
+}
+
+/* Card enhancements */
+.card {
+    box-shadow: var(--bs-box-shadow);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--bs-box-shadow-lg);
+}
+
+/* Status badges with better visibility */
+.badge {
+    font-size: 0.7em;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.badge i {
+    margin-right: 0.25rem;
+}
+
+/* Alert enhancements */
+.alert {
+    border: none;
+    border-radius: var(--bs-border-radius);
+    box-shadow: var(--bs-box-shadow);
+}
+
+.alert-sm {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+}
+
+.new-alert {
+    animation: slideIn 0.5s ease-in-out;
+    border-left: 4px solid var(--bs-warning);
+}
+
+/* Table enhancements */
+.table {
+    font-size: 0.9rem;
+}
+
+.table-responsive {
+    border-radius: var(--bs-border-radius);
+    overflow: hidden;
+}
+
+.table th {
+    border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.table td {
+    vertical-align: middle;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.table tbody tr:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Button group enhancements */
+.btn-group-sm .btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+}
+
+.btn-outline-primary:hover,
+.btn-outline-success:hover,
+.btn-outline-danger:hover,
+.btn-outline-secondary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.2);
+}
+
+/* Loading states */
+.loading {
+    position: relative;
+    opacity: 0.7;
+}
+
+.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid var(--bs-primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Vulnerability description truncation */
+.vulnerability-description {
+    max-width: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Chart containers */
+.chart-container {
+    position: relative;
+    height: 300px;
+    width: 100%;
+}
+
+/* Status indicators */
+.status-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 0.5rem;
+}
+
+.status-indicator.running {
+    background-color: var(--bs-primary);
+    animation: pulse 2s infinite;
+}
+
+.status-indicator.completed {
+    background-color: var(--bs-success);
+}
+
+.status-indicator.failed {
+    background-color: var(--bs-danger);
+}
+
+.status-indicator.pending {
+    background-color: var(--bs-warning);
+}
+
+/* Navigation enhancements */
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.5rem;
+}
+
+.nav-link {
+    font-weight: 500;
+    transition: color 0.2s ease-in-out;
+}
+
+.nav-link:hover {
+    color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.nav-link.active {
+    color: #fff !important;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 0.25rem;
+}
+
+/* Footer styles */
+footer {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Modal enhancements */
+.modal-content {
+    border: none;
+    border-radius: var(--bs-border-radius);
+    box-shadow: var(--bs-box-shadow-lg);
+}
+
+.modal-header {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.modal-footer {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Code highlighting */
+pre {
+    border-radius: var(--bs-border-radius);
+    font-size: 0.875rem;
+    line-height: 1.4;
+}
+
+code {
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 0.125rem 0.25rem;
+    border-radius: 0.25rem;
+    font-size: 0.875em;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .table-responsive {
+        font-size: 0.8rem;
+    }
+    
+    .card-body {
+        padding: 1rem;
+    }
+    
+    .btn-group-sm .btn {
+        padding: 0.2rem 0.4rem;
+        font-size: 0.7rem;
+    }
+    
+    .chart-container {
+        height: 250px;
+    }
+}
+
+@media (max-width: 576px) {
+    .navbar-brand {
+        font-size: 1.2rem;
+    }
+    
+    .container {
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+    }
+    
+    .card {
+        margin-bottom: 1rem;
+    }
+}
+
+/* Dark theme specific adjustments */
+[data-bs-theme="dark"] {
+    --bs-body-bg: #0d1117;
+    --bs-body-color: #c9d1d9;
+}
+
+[data-bs-theme="dark"] .bg-dark {
+    background-color: #161b22 !important;
+}
+
+[data-bs-theme="dark"] .border-bottom {
+    border-color: rgba(240, 246, 252, 0.1) !important;
+}
+
+/* Print styles */
+@media print {
+    .navbar,
+    .btn,
+    .dropdown,
+    footer {
+        display: none !important;
+    }
+    
+    .card {
+        box-shadow: none;
+        border: 1px solid #000;
+    }
+    
+    .container {
+        max-width: none;
+        padding: 0;
+    }
+}

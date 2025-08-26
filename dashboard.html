@@ -1,0 +1,324 @@
+{% extends "base.html" %}
+
+{% block title %}Security Scanner{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1 class="h3 mb-3">
+            <i data-feather="shield" class="me-2"></i>
+            Security Scanner
+        </h1>
+        <p class="text-muted">Real-time security scanning and vulnerability monitoring</p>
+    </div>
+</div>
+
+<!-- Key Metrics Cards -->
+<div class="row mb-4">
+    <div class="col-md-3 mb-3">
+        <div class="card bg-primary">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-title text-white-50">Total Scans</h6>
+                        <h2 class="text-white mb-0">{{ total_scans }}</h2>
+                    </div>
+                    <i data-feather="search" class="text-white-50" width="40" height="40"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-3">
+        <div class="card bg-success">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-title text-white-50">Running Scans</h6>
+                        <h2 class="text-white mb-0" id="running-scans-count">{{ running_scans }}</h2>
+                    </div>
+                    <i data-feather="activity" class="text-white-50" width="40" height="40"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-3">
+        <div class="card bg-danger">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-title text-white-50">Critical Vulnerabilities</h6>
+                        <h2 class="text-white mb-0" id="critical-vulns-count">{{ critical_vulns }}</h2>
+                    </div>
+                    <i data-feather="alert-triangle" class="text-white-50" width="40" height="40"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-3">
+        <div class="card bg-warning">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-title text-dark-50">Total Vulnerabilities</h6>
+                        <h2 class="text-dark mb-0" id="total-vulns-count">{{ total_vulns }}</h2>
+                    </div>
+                    <i data-feather="shield-off" class="text-dark-50" width="40" height="40"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Real-time Scan Progress -->
+<div class="row mb-4">
+    <div class="col-lg-8 mb-3">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">
+                    <i data-feather="activity" class="me-2"></i>
+                    Active Scans
+                </h5>
+                <div class="dropdown">
+                    <button class="btn btn-outline-primary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        <i data-feather="plus" width="16" height="16"></i>
+                        New Scan
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#" onclick="startScan('SAST')">SAST Scan</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="startScan('DAST')">DAST Scan</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="startScan('IaC')">IaC Scan</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="card-body">
+                <div id="active-scans-container">
+                    {% if recent_scans %}
+                        {% for scan in recent_scans %}
+                            {% if scan.status == 'running' %}
+                            <div class="scan-progress mb-3" data-scan-id="{{ scan.id }}">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <div>
+                                        <strong>{{ scan.scan_type }} Scan</strong>
+                                        <small class="text-muted ms-2">{{ scan.target }}</small>
+                                    </div>
+                                    <span class="badge bg-primary">{{ scan.progress }}%</span>
+                                </div>
+                                <div class="progress mb-2">
+                                    <div class="progress-bar bg-primary" role="progressbar" 
+                                         style="width: {{ scan.progress }}%" 
+                                         aria-valuenow="{{ scan.progress }}" 
+                                         aria-valuemin="0" 
+                                         aria-valuemax="100"></div>
+                                </div>
+                                <small class="text-muted">
+                                    {{ scan.scanned_files }}/{{ scan.total_files }} files scanned
+                                    • {{ scan.vulnerabilities_found }} vulnerabilities found
+                                </small>
+                            </div>
+                            {% endif %}
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center py-4 text-muted">
+                            <i data-feather="search" width="48" height="48" class="mb-3"></i>
+                            <p>No active scans running</p>
+                            <button class="btn btn-primary" onclick="startScan('SAST')">Start New Scan</button>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4 mb-3">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i data-feather="bell" class="me-2"></i>
+                    Recent Alerts
+                </h5>
+            </div>
+            <div class="card-body">
+                <div id="recent-alerts">
+                    <!-- Alerts will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row -->
+<div class="row mb-4">
+    <div class="col-lg-6 mb-3">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i data-feather="pie-chart" class="me-2"></i>
+                    Vulnerabilities by Severity
+                </h5>
+            </div>
+            <div class="card-body">
+                <canvas id="severityChart" width="400" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-6 mb-3">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i data-feather="trending-up" class="me-2"></i>
+                    Scan Trends (Last 30 Days)
+                </h5>
+            </div>
+            <div class="card-body">
+                <canvas id="trendsChart" width="400" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Scans Table -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i data-feather="list" class="me-2"></i>
+                    Recent Scans
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Scan Type</th>
+                                <th>Target</th>
+                                <th>Status</th>
+                                <th>Started</th>
+                                <th>Duration</th>
+                                <th>Vulnerabilities</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for scan in recent_scans %}
+                            <tr>
+                                <td>
+                                    <span class="badge bg-secondary">{{ scan.scan_type }}</span>
+                                </td>
+                                <td>{{ scan.target }}</td>
+                                <td>
+                                    {% if scan.status == 'running' %}
+                                        <span class="badge bg-primary">Running</span>
+                                    {% elif scan.status == 'completed' %}
+                                        <span class="badge bg-success">Completed</span>
+                                    {% elif scan.status == 'failed' %}
+                                        <span class="badge bg-danger">Failed</span>
+                                    {% else %}
+                                        <span class="badge bg-warning">Pending</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ scan.started_at.strftime('%Y-%m-%d %H:%M') if scan.started_at else '--' }}</td>
+                                <td>
+                                    {% if scan.completed_at and scan.started_at %}
+                                        {{ ((scan.completed_at - scan.started_at).total_seconds() / 60) | round(1) }}m
+                                    {% elif scan.status == 'running' %}
+                                        <span class="text-muted">Running...</span>
+                                    {% else %}
+                                        --
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if scan.vulnerabilities_found > 0 %}
+                                        <span class="badge bg-danger">{{ scan.vulnerabilities_found }}</span>
+                                    {% else %}
+                                        <span class="badge bg-success">0</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <button class="btn btn-outline-primary btn-sm" onclick="viewScanDetails({{ scan.id }})">
+                                            <i data-feather="eye" width="14" height="14"></i>
+                                        </button>
+                                        {% if scan.status == 'completed' %}
+                                        <button class="btn btn-outline-success btn-sm" onclick="downloadReport({{ scan.id }})">
+                                            <i data-feather="download" width="14" height="14"></i>
+                                        </button>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Initialize charts and real-time updates
+document.addEventListener('DOMContentLoaded', function() {
+    initializeCharts();
+    startRealTimeUpdates();
+});
+
+function startScan(scanType) {
+    fetch('/api/start_scan', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            scan_type: scanType,
+            target: 'current_project'
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showAlert('success', `${scanType} scan started successfully`);
+            setTimeout(() => location.reload(), 1000);
+        } else {
+            showAlert('danger', 'Failed to start scan');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showAlert('danger', 'Error starting scan');
+    });
+}
+
+function viewScanDetails(scanId) {
+    // Redirect to scan details page or show modal
+    window.location.href = `/scans?scan_id=${scanId}`;
+}
+
+function downloadReport(scanId) {
+    // Implement report download
+    showAlert('info', 'Report download functionality coming soon');
+}
+
+function showAlert(type, message) {
+    const alertContainer = document.createElement('div');
+    alertContainer.className = `alert alert-${type} alert-dismissible fade show`;
+    alertContainer.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    document.querySelector('main').insertAdjacentElement('afterbegin', alertContainer);
+    
+    setTimeout(() => {
+        alertContainer.remove();
+    }, 5000);
+}
+</script>
+{% endblock %}

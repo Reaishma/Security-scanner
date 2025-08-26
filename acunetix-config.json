@@ -1,0 +1,336 @@
+{
+  "target_configuration": {
+    "target_settings": {
+      "address": "http://localhost:5000",
+      "description": "Security Scanner Dashboard - Dynamic Application Security Testing",
+      "criticality": 30,
+      "target_type": "web_application"
+    },
+    "authentication": {
+      "enabled": false,
+      "type": "form_based",
+      "login_url": "/auth/login",
+      "username_field": "username",
+      "password_field": "password",
+      "username": "${TEST_USERNAME}",
+      "password": "${TEST_PASSWORD}",
+      "logout_url": "/auth/logout"
+    },
+    "crawling_settings": {
+      "max_crawl_time": 3600,
+      "max_pages": 1000,
+      "max_depth": 10,
+      "follow_redirects": true,
+      "crawl_external_links": false,
+      "user_agent": "Acunetix Web Vulnerability Scanner",
+      "exclude_patterns": [
+        "/static/*",
+        "*.css",
+        "*.js",
+        "*.png", 
+        "*.jpg",
+        "*.gif",
+        "/admin/logout"
+      ],
+      "include_patterns": [
+        "/api/*",
+        "/scans/*",
+        "/vulnerabilities/*"
+      ]
+    }
+  },
+  "scan_configuration": {
+    "scan_type": "full_scan",
+    "scan_profile": "high_risk",
+    "max_scan_time": 7200,
+    "scan_policy": {
+      "name": "Custom Security Policy",
+      "checks": {
+        "sql_injection": {
+          "enabled": true,
+          "severity": "high",
+          "confidence": "high"
+        },
+        "cross_site_scripting": {
+          "enabled": true,
+          "severity": "high", 
+          "confidence": "high",
+          "types": ["reflected", "stored", "dom_based"]
+        },
+        "path_traversal": {
+          "enabled": true,
+          "severity": "high",
+          "confidence": "medium"
+        },
+        "command_injection": {
+          "enabled": true,
+          "severity": "high",
+          "confidence": "high"
+        },
+        "ldap_injection": {
+          "enabled": true,
+          "severity": "medium",
+          "confidence": "medium"
+        },
+        "xml_external_entity": {
+          "enabled": true,
+          "severity": "high",
+          "confidence": "high"
+        },
+        "server_side_template_injection": {
+          "enabled": true,
+          "severity": "high",
+          "confidence": "medium"
+        },
+        "authentication_bypass": {
+          "enabled": true,
+          "severity": "high",
+          "confidence": "medium"
+        },
+        "session_fixation": {
+          "enabled": true,
+          "severity": "medium",
+          "confidence": "medium"
+        },
+        "insecure_direct_object_reference": {
+          "enabled": true,
+          "severity": "medium",
+          "confidence": "medium"
+        },
+        "cross_site_request_forgery": {
+          "enabled": true,
+          "severity": "medium",
+          "confidence": "medium"
+        },
+        "security_misconfiguration": {
+          "enabled": true,
+          "severity": "medium",
+          "confidence": "low"
+        },
+        "sensitive_data_exposure": {
+          "enabled": true,
+          "severity": "medium",
+          "confidence": "medium"
+        },
+        "insufficient_transport_layer_protection": {
+          "enabled": true,
+          "severity": "medium",
+          "confidence": "high"
+        },
+        "unvalidated_redirects": {
+          "enabled": true,
+          "severity": "low",
+          "confidence": "medium"
+        }
+      }
+    },
+    "advanced_settings": {
+      "enable_javascript": true,
+      "javascript_timeout": 30,
+      "enable_dom_fuzzing": true,
+      "max_form_submissions": 50,
+      "form_authentication": true,
+      "cookie_jar_persistence": true,
+      "custom_headers": {
+        "X-Forwarded-For": "127.0.0.1",
+        "X-Real-IP": "127.0.0.1"
+      }
+    }
+  },
+  "vulnerability_detection": {
+    "owasp_top_10": {
+      "a01_injection": {
+        "enabled": true,
+        "tests": ["sql_injection", "nosql_injection", "ldap_injection", "xpath_injection"]
+      },
+      "a02_broken_authentication": {
+        "enabled": true,
+        "tests": ["weak_passwords", "session_fixation", "credential_stuffing"]
+      },
+      "a03_sensitive_data_exposure": {
+        "enabled": true,
+        "tests": ["ssl_tls_configuration", "sensitive_data_transmission"]
+      },
+      "a04_xml_external_entities": {
+        "enabled": true,
+        "tests": ["xxe_injection", "xml_bomb"]
+      },
+      "a05_broken_access_control": {
+        "enabled": true,
+        "tests": ["privilege_escalation", "forced_browsing", "idor"]
+      },
+      "a06_security_misconfiguration": {
+        "enabled": true,
+        "tests": ["default_credentials", "unnecessary_features", "error_handling"]
+      },
+      "a07_cross_site_scripting": {
+        "enabled": true,
+        "tests": ["reflected_xss", "stored_xss", "dom_xss"]
+      },
+      "a08_insecure_deserialization": {
+        "enabled": true,
+        "tests": ["object_injection", "serialization_attacks"]
+      },
+      "a09_vulnerable_components": {
+        "enabled": true,
+        "tests": ["outdated_libraries", "known_vulnerabilities"]
+      },
+      "a10_insufficient_logging": {
+        "enabled": true,
+        "tests": ["audit_logs", "monitoring_capabilities"]
+      }
+    },
+    "custom_checks": {
+      "flask_specific": {
+        "secret_key_exposure": true,
+        "debug_mode_detection": true,
+        "template_injection": true,
+        "werkzeug_debugger": true
+      },
+      "api_security": {
+        "api_enumeration": true,
+        "rate_limiting": true,
+        "cors_misconfiguration": true,
+        "api_versioning": true
+      },
+      "database_security": {
+        "database_enumeration": true,
+        "blind_sql_injection": true,
+        "time_based_sql_injection": true
+      }
+    }
+  },
+  "reporting_configuration": {
+    "report_formats": [
+      "html",
+      "pdf", 
+      "xml",
+      "json"
+    ],
+    "report_sections": {
+      "executive_summary": true,
+      "vulnerability_details": true,
+      "remediation_guidance": true,
+      "compliance_mapping": true,
+      "risk_assessment": true,
+      "technical_details": true
+    },
+    "compliance_reports": {
+      "owasp_top_10": true,
+      "pci_dss": true,
+      "iso_27001": true,
+      "nist_cybersecurity": true
+    },
+    "custom_branding": {
+      "company_logo": true,
+      "company_name": "Security Team",
+      "report_footer": "Confidential Security Assessment"
+    }
+  },
+  "integration_settings": {
+    "ci_cd_integration": {
+      "enabled": true,
+      "fail_build_on_high": true,
+      "fail_build_on_medium": false,
+      "webhook_url": "${ACUNETIX_WEBHOOK_URL}",
+      "api_key": "${ACUNETIX_API_KEY}"
+    },
+    "issue_tracking": {
+      "jira_integration": {
+        "enabled": false,
+        "server_url": "${JIRA_URL}",
+        "project_key": "SEC",
+        "issue_type": "Security Vulnerability"
+      },
+      "github_integration": {
+        "enabled": true,
+        "create_issues": true,
+        "repository": "${GITHUB_REPOSITORY}",
+        "access_token": "${GITHUB_TOKEN}"
+      }
+    },
+    "notification_systems": {
+      "slack": {
+        "enabled": true,
+        "webhook_url": "${SLACK_WEBHOOK_URL}",
+        "channel": "#security-alerts",
+        "mention_team": "@security-team"
+      },
+      "email": {
+        "enabled": true,
+        "recipients": [
+          "security@company.com",
+          "devops@company.com"
+        ],
+        "smtp_settings": {
+          "server": "smtp.company.com",
+          "port": 587,
+          "encryption": "tls"
+        }
+      }
+    }
+  },
+  "scan_scheduling": {
+    "recurring_scans": {
+      "enabled": true,
+      "frequency": "weekly",
+      "day_of_week": "sunday",
+      "time": "02:00",
+      "timezone": "UTC"
+    },
+    "trigger_conditions": {
+      "code_commits": true,
+      "deployment_events": true,
+      "manual_triggers": true
+    }
+  },
+  "performance_settings": {
+    "scan_optimization": {
+      "concurrent_connections": 10,
+      "request_delay": 100,
+      "timeout_settings": {
+        "connection_timeout": 30,
+        "read_timeout": 60
+      }
+    },
+    "resource_limits": {
+      "max_memory_usage": "2GB",
+      "max_cpu_usage": "80%",
+      "scan_time_limit": 7200
+    }
+  },
+  "security_settings": {
+    "scanner_identification": {
+      "hide_scanner_signature": false,
+      "custom_user_agent": true,
+      "stealth_mode": false
+    },
+    "request_signing": {
+      "enabled": false,
+      "certificate_path": "/path/to/cert.pem",
+      "private_key_path": "/path/to/key.pem"
+    }
+  },
+  "compliance_frameworks": {
+    "pci_dss": {
+      "enabled": true,
+      "requirements": [
+        "6.5.1", "6.5.2", "6.5.3", "6.5.4", "6.5.5",
+        "6.5.6", "6.5.7", "6.5.8", "6.5.9", "6.5.10"
+      ]
+    },
+    "owasp_asvs": {
+      "enabled": true,
+      "level": 2,
+      "verification_requirements": [
+        "V1", "V2", "V3", "V4", "V5", "V6", "V7", "V8", "V9", "V10"
+      ]
+    },
+    "iso_27001": {
+      "enabled": true,
+      "controls": [
+        "A.14.2.1", "A.14.2.5", "A.14.2.8"
+      ]
+    }
+  }
+}

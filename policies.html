@@ -1,0 +1,563 @@
+{% extends "base.html" %}
+
+{% block title %}Policy Management{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1 class="h3 mb-3">
+            <i data-feather="shield" class="me-2"></i>
+            Policy Management
+        </h1>
+        <p class="text-muted">Infrastructure and Kubernetes policy compliance monitoring</p>
+    </div>
+</div>
+
+<!-- Policy Validation Section -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i data-feather="file-text" class="me-2"></i>
+                    Validate Infrastructure Policies
+                </h5>
+                <p class="card-text">Validate Terraform plans against Sentinel policies</p>
+                
+                <div class="mb-3">
+                    <label for="terraformPlan" class="form-label">Terraform Plan File</label>
+                    <input type="file" class="form-control" id="terraformPlan" accept=".json,.tfplan">
+                </div>
+                
+                <button class="btn btn-primary" onclick="validateTerraformPolicies()">
+                    <i data-feather="check-circle" class="me-1"></i>
+                    Validate Infrastructure
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i data-feather="cpu" class="me-2"></i>
+                    Validate Kubernetes Policies
+                </h5>
+                <p class="card-text">Validate Kubernetes resources against OPA policies</p>
+                
+                <div class="mb-3">
+                    <label for="k8sResources" class="form-label">Kubernetes Resources (YAML/JSON)</label>
+                    <textarea class="form-control" id="k8sResources" rows="4" 
+                              placeholder="Paste your Kubernetes resources here..."></textarea>
+                </div>
+                
+                <button class="btn btn-primary" onclick="validateKubernetesPolicies()">
+                    <i data-feather="check-circle" class="me-1"></i>
+                    Validate Kubernetes
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Policy Compliance Metrics -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <div class="display-6 text-primary" id="complianceScore">0%</div>
+                <div class="text-muted small">Compliance Score</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <div class="display-6 text-info" id="totalPolicyScans">0</div>
+                <div class="text-muted small">Policy Scans Today</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <div class="display-6 text-warning" id="totalViolations">0</div>
+                <div class="text-muted small">Active Violations</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <div class="display-6 text-danger" id="criticalViolations">0</div>
+                <div class="text-muted small">Critical Issues</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Policy Scan Results -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i data-feather="activity" class="me-2"></i>
+                    Recent Policy Scans
+                </h5>
+            </div>
+            <div class="card-body">
+                <div id="policyScanResults">
+                    <div class="text-center text-muted py-4">
+                        <i data-feather="clock" class="mb-2"></i>
+                        <div>No policy scans performed yet</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Policy Violations -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">
+                    <i data-feather="alert-triangle" class="me-2"></i>
+                    Policy Violations
+                </h5>
+                <div>
+                    <select class="form-select form-select-sm" id="severityFilter" onchange="filterViolations()">
+                        <option value="">All Severities</option>
+                        <option value="critical">Critical</option>
+                        <option value="high">High</option>
+                        <option value="medium">Medium</option>
+                        <option value="low">Low</option>
+                    </select>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-dark">
+                        <thead>
+                            <tr>
+                                <th>Severity</th>
+                                <th>Policy</th>
+                                <th>Rule</th>
+                                <th>Resource</th>
+                                <th>Message</th>
+                                <th>Discovered</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="violationsTable">
+                            <tr>
+                                <td colspan="7" class="text-center text-muted">
+                                    Loading violations...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Validation Results Modal -->
+<div class="modal fade" id="validationResultsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Policy Validation Results</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="validationResults"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Policy Management JavaScript
+let currentValidationResults = null;
+
+// Load policy metrics on page load
+document.addEventListener('DOMContentLoaded', function() {
+    loadPolicyMetrics();
+    loadPolicyScans();
+    loadPolicyViolations();
+    
+    // Refresh data every 30 seconds
+    setInterval(() => {
+        loadPolicyMetrics();
+        loadPolicyScans();
+        loadPolicyViolations();
+    }, 30000);
+});
+
+function loadPolicyMetrics() {
+    fetch('/api/policy/metrics')
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('complianceScore').textContent = 
+                Math.round(data.current_compliance) + '%';
+            document.getElementById('totalPolicyScans').textContent = 
+                data.total_scans_today;
+            document.getElementById('totalViolations').textContent = 
+                Object.values(data.violations_by_severity || {}).reduce((a, b) => a + b, 0);
+            document.getElementById('criticalViolations').textContent = 
+                data.violations_by_severity?.critical || 0;
+        })
+        .catch(error => {
+            console.error('Error loading policy metrics:', error);
+        });
+}
+
+function loadPolicyScans() {
+    fetch('/api/policy/scans')
+        .then(response => response.json())
+        .then(data => {
+            const container = document.getElementById('policyScanResults');
+            
+            if (data.scans && data.scans.length > 0) {
+                container.innerHTML = data.scans.map(scan => `
+                    <div class="border-bottom py-2">
+                        <div class="row align-items-center">
+                            <div class="col-md-3">
+                                <strong>${scan.policy_name}</strong><br>
+                                <small class="text-muted">${scan.scan_type.toUpperCase()}</small>
+                            </div>
+                            <div class="col-md-2">
+                                <span class="badge ${getBadgeClass(scan.result)}">
+                                    ${scan.result.toUpperCase()}
+                                </span>
+                            </div>
+                            <div class="col-md-2">
+                                <small class="text-muted">${scan.violations_count} violations</small>
+                            </div>
+                            <div class="col-md-3">
+                                <small class="text-muted">${formatDate(scan.started_at)}</small>
+                            </div>
+                            <div class="col-md-2">
+                                <small class="text-muted">${scan.execution_time.toFixed(2)}s</small>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                container.innerHTML = `
+                    <div class="text-center text-muted py-4">
+                        <i data-feather="clock" class="mb-2"></i>
+                        <div>No policy scans performed yet</div>
+                    </div>
+                `;
+                feather.replace();
+            }
+        })
+        .catch(error => {
+            console.error('Error loading policy scans:', error);
+        });
+}
+
+function loadPolicyViolations() {
+    const severityFilter = document.getElementById('severityFilter').value;
+    const url = `/api/policy/violations?severity=${severityFilter}`;
+    
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            const tbody = document.getElementById('violationsTable');
+            
+            if (data.violations && data.violations.length > 0) {
+                tbody.innerHTML = data.violations.map(violation => `
+                    <tr>
+                        <td>
+                            <span class="badge ${getSeverityBadgeClass(violation.severity)}">
+                                ${violation.severity.toUpperCase()}
+                            </span>
+                        </td>
+                        <td>${violation.policy_scan?.policy_name || 'Unknown'}</td>
+                        <td>${violation.rule_name}</td>
+                        <td>
+                            ${violation.resource_type || 'N/A'}<br>
+                            <small class="text-muted">${violation.resource_name || ''}</small>
+                        </td>
+                        <td>${violation.message}</td>
+                        <td>
+                            <small class="text-muted">${formatDate(violation.discovered_at)}</small>
+                        </td>
+                        <td>
+                            <span class="badge ${getStatusBadgeClass(violation.status)}">
+                                ${violation.status.toUpperCase()}
+                            </span>
+                        </td>
+                    </tr>
+                `).join('');
+            } else {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="text-center text-muted">
+                            No violations found
+                        </td>
+                    </tr>
+                `;
+            }
+        })
+        .catch(error => {
+            console.error('Error loading policy violations:', error);
+        });
+}
+
+function validateTerraformPolicies() {
+    const fileInput = document.getElementById('terraformPlan');
+    const file = fileInput.files[0];
+    
+    if (!file) {
+        alert('Please select a Terraform plan file');
+        return;
+    }
+    
+    // For demo purposes, simulate validation
+    const mockData = {
+        type: 'terraform',
+        plan_file: file.name,
+        target: 'infrastructure-plan'
+    };
+    
+    fetch('/api/policy/validate', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(mockData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        showValidationResults(data);
+        loadPolicyMetrics();
+        loadPolicyScans();
+        loadPolicyViolations();
+    })
+    .catch(error => {
+        console.error('Error validating policies:', error);
+        alert('Policy validation failed. Please try again.');
+    });
+}
+
+function validateKubernetesPolicies() {
+    const resourcesText = document.getElementById('k8sResources').value.trim();
+    
+    if (!resourcesText) {
+        alert('Please enter Kubernetes resources');
+        return;
+    }
+    
+    try {
+        // Try to parse as YAML/JSON
+        const resources = parseKubernetesResources(resourcesText);
+        
+        const data = {
+            type: 'kubernetes',
+            resources: resources,
+            target: 'kubernetes-resources'
+        };
+        
+        fetch('/api/policy/validate', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(data => {
+            showValidationResults(data);
+            loadPolicyMetrics();
+            loadPolicyScans();
+            loadPolicyViolations();
+        })
+        .catch(error => {
+            console.error('Error validating policies:', error);
+            alert('Policy validation failed. Please try again.');
+        });
+        
+    } catch (error) {
+        alert('Invalid Kubernetes resource format. Please check your YAML/JSON.');
+    }
+}
+
+function parseKubernetesResources(text) {
+    // Simple parsing for demo - in real implementation would use proper YAML parser
+    try {
+        return JSON.parse(text);
+    } catch (e) {
+        // Mock Kubernetes resource for demo
+        return [{
+            kind: 'Pod',
+            metadata: { name: 'example-pod' },
+            spec: {
+                containers: [{
+                    name: 'app',
+                    image: 'nginx:latest',
+                    securityContext: {
+                        runAsRoot: true
+                    }
+                }]
+            }
+        }];
+    }
+}
+
+function showValidationResults(data) {
+    currentValidationResults = data;
+    
+    const resultsDiv = document.getElementById('validationResults');
+    
+    if (data.report) {
+        const report = data.report;
+        
+        resultsDiv.innerHTML = `
+            <div class="mb-3">
+                <h6>Validation Summary</h6>
+                <div class="row">
+                    <div class="col-3">
+                        <div class="text-center">
+                            <div class="h5 text-success">${report.summary.passed}</div>
+                            <div class="small text-muted">Passed</div>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="text-center">
+                            <div class="h5 text-danger">${report.summary.failed}</div>
+                            <div class="small text-muted">Failed</div>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="text-center">
+                            <div class="h5 text-warning">${report.summary.errors}</div>
+                            <div class="small text-muted">Errors</div>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="text-center">
+                            <div class="h5 text-primary">${Math.round(report.summary.pass_rate)}%</div>
+                            <div class="small text-muted">Pass Rate</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mb-3">
+                <h6>Violations by Severity</h6>
+                <div class="row">
+                    ${Object.entries(report.violations.by_severity).map(([severity, count]) => `
+                        <div class="col">
+                            <div class="text-center">
+                                <div class="h6 ${getSeverityColor(severity)}">${count}</div>
+                                <div class="small text-muted">${severity.toUpperCase()}</div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+            
+            <div>
+                <h6>Policy Results</h6>
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Policy</th>
+                                <th>Result</th>
+                                <th>Violations</th>
+                                <th>Time</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${report.policy_results.map(result => `
+                                <tr>
+                                    <td>${result.policy_name}</td>
+                                    <td>
+                                        <span class="badge ${getBadgeClass(result.result)}">
+                                            ${result.result.toUpperCase()}
+                                        </span>
+                                    </td>
+                                    <td>${result.violations_count}</td>
+                                    <td>${result.execution_time.toFixed(2)}s</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        `;
+    } else {
+        resultsDiv.innerHTML = `
+            <div class="alert alert-danger">
+                <h6>Validation Failed</h6>
+                <p>${data.error || 'Unknown error occurred'}</p>
+            </div>
+        `;
+    }
+    
+    const modal = new bootstrap.Modal(document.getElementById('validationResultsModal'));
+    modal.show();
+}
+
+function filterViolations() {
+    loadPolicyViolations();
+}
+
+// Utility functions
+function getBadgeClass(result) {
+    switch (result) {
+        case 'pass': return 'bg-success';
+        case 'fail': return 'bg-danger';
+        case 'error': return 'bg-warning';
+        default: return 'bg-secondary';
+    }
+}
+
+function getSeverityBadgeClass(severity) {
+    switch (severity) {
+        case 'critical': return 'bg-danger';
+        case 'high': return 'bg-warning';
+        case 'medium': return 'bg-info';
+        case 'low': return 'bg-success';
+        default: return 'bg-secondary';
+    }
+}
+
+function getStatusBadgeClass(status) {
+    switch (status) {
+        case 'open': return 'bg-danger';
+        case 'resolved': return 'bg-success';
+        case 'suppressed': return 'bg-warning';
+        default: return 'bg-secondary';
+    }
+}
+
+function getSeverityColor(severity) {
+    switch (severity) {
+        case 'critical': return 'text-danger';
+        case 'high': return 'text-warning';
+        case 'medium': return 'text-info';
+        case 'low': return 'text-success';
+        default: return 'text-muted';
+    }
+}
+
+function formatDate(dateString) {
+    if (!dateString) return 'N/A';
+    const date = new Date(dateString);
+    return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+}
+</script>
+{% endblock %}

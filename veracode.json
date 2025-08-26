@@ -1,0 +1,218 @@
+{
+  "scan_settings": {
+    "application_profile": {
+      "application_name": "Security Scanner Dashboard",
+      "business_criticality": "Very High",
+      "policy": "Veracode Recommended Very High",
+      "teams": ["Security Team", "DevOps Team"],
+      "business_owner": "Security Team",
+      "business_owner_email": "security@company.com"
+    },
+    "scan_configuration": {
+      "scan_all_top_level_modules": true,
+      "auto_scan": true,
+      "scan_level": "2",
+      "exclude_third_party_libraries": false,
+      "include_new_modules": true,
+      "modules_to_scan": [
+        "app.py",
+        "routes.py", 
+        "models.py",
+        "security_scanner.py"
+      ],
+      "exclude_patterns": [
+        "*.pyc",
+        "__pycache__/*",
+        "venv/*",
+        "*.git/*",
+        "node_modules/*",
+        "*.min.js",
+        "*.min.css"
+      ]
+    },
+    "security_standards": {
+      "owasp_top_10": true,
+      "sans_top_25": true,
+      "pci_dss": true,
+      "gdpr": true,
+      "soc2": true,
+      "nist": true
+    },
+    "vulnerability_categories": {
+      "sql_injection": {
+        "enabled": true,
+        "severity_threshold": "medium"
+      },
+      "cross_site_scripting": {
+        "enabled": true,
+        "severity_threshold": "medium"
+      },
+      "authentication_bypass": {
+        "enabled": true,
+        "severity_threshold": "high"
+      },
+      "authorization_flaws": {
+        "enabled": true,
+        "severity_threshold": "high"
+      },
+      "sensitive_data_exposure": {
+        "enabled": true,
+        "severity_threshold": "medium"
+      },
+      "broken_access_control": {
+        "enabled": true,
+        "severity_threshold": "high"
+      },
+      "security_misconfiguration": {
+        "enabled": true,
+        "severity_threshold": "medium"
+      },
+      "insecure_components": {
+        "enabled": true,
+        "severity_threshold": "medium"
+      },
+      "insufficient_logging": {
+        "enabled": true,
+        "severity_threshold": "low"
+      },
+      "injection_flaws": {
+        "enabled": true,
+        "severity_threshold": "high"
+      }
+    }
+  },
+  "reporting_configuration": {
+    "report_formats": ["pdf", "xml", "json"],
+    "include_source_code": false,
+    "include_call_stacks": true,
+    "detailed_report": true,
+    "executive_summary": true,
+    "remediation_guidance": true,
+    "false_positive_filtering": true
+  },
+  "notification_settings": {
+    "email_notifications": {
+      "enabled": true,
+      "recipients": [
+        "security@company.com",
+        "devops@company.com"
+      ],
+      "events": [
+        "scan_complete",
+        "high_severity_found",
+        "critical_severity_found",
+        "scan_failed"
+      ]
+    },
+    "webhook_notifications": {
+      "enabled": true,
+      "webhook_url": "${WEBHOOK_URL}",
+      "authentication": {
+        "type": "bearer_token",
+        "token": "${WEBHOOK_TOKEN}"
+      }
+    },
+    "slack_integration": {
+      "enabled": true,
+      "webhook_url": "${SLACK_WEBHOOK_URL}",
+      "channel": "#security-alerts",
+      "mention_users": ["@security-team"]
+    }
+  },
+  "pipeline_integration": {
+    "github_actions": {
+      "enabled": true,
+      "check_run_name": "Veracode Security Scan",
+      "fail_build_on": ["very_high", "high"],
+      "comment_on_pr": true
+    },
+    "api_configuration": {
+      "api_id": "${VERACODE_API_ID}",
+      "api_key": "${VERACODE_API_KEY}",
+      "region": "us",
+      "timeout": 3600
+    }
+  },
+  "compliance_frameworks": {
+    "pci_dss": {
+      "enabled": true,
+      "requirements": [
+        "6.5.1", "6.5.2", "6.5.3", "6.5.4", "6.5.5",
+        "6.5.6", "6.5.7", "6.5.8", "6.5.9", "6.5.10"
+      ]
+    },
+    "owasp_asvs": {
+      "enabled": true,
+      "level": 2,
+      "categories": [
+        "V1", "V2", "V3", "V4", "V5",
+        "V6", "V7", "V8", "V9", "V10"
+      ]
+    },
+    "iso_27001": {
+      "enabled": true,
+      "controls": [
+        "A.14.2.1", "A.14.2.5", "A.14.2.8"
+      ]
+    }
+  },
+  "custom_rules": {
+    "flask_security_rules": {
+      "check_secret_key_hardcoding": true,
+      "validate_session_configuration": true,
+      "check_csrf_protection": true,
+      "validate_input_sanitization": true,
+      "check_sql_parameterization": true
+    },
+    "python_security_rules": {
+      "check_pickle_usage": true,
+      "validate_subprocess_calls": true,
+      "check_eval_usage": true,
+      "validate_random_generation": true,
+      "check_temp_file_creation": true
+    }
+  },
+  "remediation_priorities": {
+    "critical": {
+      "sla_hours": 24,
+      "auto_assign": true,
+      "escalation_enabled": true
+    },
+    "high": {
+      "sla_hours": 72,
+      "auto_assign": true,
+      "escalation_enabled": true
+    },
+    "medium": {
+      "sla_hours": 168,
+      "auto_assign": false,
+      "escalation_enabled": false
+    },
+    "low": {
+      "sla_hours": 720,
+      "auto_assign": false,
+      "escalation_enabled": false
+    }
+  },
+  "advanced_settings": {
+    "dynamic_analysis": {
+      "enabled": false,
+      "crawl_configuration": {
+        "max_pages": 100,
+        "timeout_seconds": 300,
+        "user_agent": "Veracode Security Scanner"
+      }
+    },
+    "static_analysis": {
+      "deep_scan": true,
+      "include_framework_vulnerabilities": true,
+      "analyze_dead_code": false,
+      "performance_optimization": true
+    },
+    "intellectual_property": {
+      "source_code_upload": false,
+      "retain_artifacts": false,
+      "geographic_restrictions": ["US", "EU"]
+    }
+  }
+}

@@ -1,0 +1,422 @@
+{% extends "base.html" %}
+
+{% block title %}Security Scans{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="h3 mb-3">
+                    <i data-feather="search" class="me-2"></i>
+                    Security Scans
+                </h1>
+                <p class="text-muted">Manage and monitor security scanning activities</p>
+            </div>
+            <div class="dropdown">
+                <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                    <i data-feather="plus" class="me-1"></i>
+                    New Scan
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="#" onclick="startScan('SAST')">
+                        <i data-feather="code" class="me-2"></i>SAST Scan
+                    </a></li>
+                    <li><a class="dropdown-item" href="#" onclick="startScan('DAST')">
+                        <i data-feather="globe" class="me-2"></i>DAST Scan
+                    </a></li>
+                    <li><a class="dropdown-item" href="#" onclick="startScan('IaC')">
+                        <i data-feather="server" class="me-2"></i>IaC Scan
+                    </a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Scan Statistics -->
+<div class="row mb-4">
+    <div class="col-md-3 mb-3">
+        <div class="card">
+            <div class="card-body text-center">
+                <i data-feather="search" class="text-primary mb-2" width="40" height="40"></i>
+                <h3 class="mb-1">{{ scans|length }}</h3>
+                <small class="text-muted">Total Scans</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card">
+            <div class="card-body text-center">
+                <i data-feather="activity" class="text-success mb-2" width="40" height="40"></i>
+                <h3 class="mb-1">{{ scans|selectattr("status", "equalto", "running")|list|length }}</h3>
+                <small class="text-muted">Running</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card">
+            <div class="card-body text-center">
+                <i data-feather="check-circle" class="text-info mb-2" width="40" height="40"></i>
+                <h3 class="mb-1">{{ scans|selectattr("status", "equalto", "completed")|list|length }}</h3>
+                <small class="text-muted">Completed</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card">
+            <div class="card-body text-center">
+                <i data-feather="x-circle" class="text-danger mb-2" width="40" height="40"></i>
+                <h3 class="mb-1">{{ scans|selectattr("status", "equalto", "failed")|list|length }}</h3>
+                <small class="text-muted">Failed</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Scan Filters -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <form class="row g-3">
+                    <div class="col-md-3">
+                        <label for="scanTypeFilter" class="form-label">Scan Type</label>
+                        <select class="form-select" id="scanTypeFilter" onchange="filterScans()">
+                            <option value="">All Types</option>
+                            <option value="SAST">SAST</option>
+                            <option value="DAST">DAST</option>
+                            <option value="IaC">IaC</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="statusFilter" class="form-label">Status</label>
+                        <select class="form-select" id="statusFilter" onchange="filterScans()">
+                            <option value="">All Statuses</option>
+                            <option value="pending">Pending</option>
+                            <option value="running">Running</option>
+                            <option value="completed">Completed</option>
+                            <option value="failed">Failed</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="dateFilter" class="form-label">Date Range</label>
+                        <select class="form-select" id="dateFilter" onchange="filterScans()">
+                            <option value="">All Time</option>
+                            <option value="today">Today</option>
+                            <option value="week">This Week</option>
+                            <option value="month">This Month</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="searchFilter" class="form-label">Search Target</label>
+                        <input type="text" class="form-control" id="searchFilter" placeholder="Search..." onkeyup="filterScans()">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Scans Table -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i data-feather="list" class="me-2"></i>
+                    Security Scans
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover" id="scansTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Type</th>
+                                <th>Target</th>
+                                <th>Status</th>
+                                <th>Progress</th>
+                                <th>Started</th>
+                                <th>Duration</th>
+                                <th>Vulnerabilities</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for scan in scans %}
+                            <tr data-scan-type="{{ scan.scan_type }}" data-status="{{ scan.status }}" data-target="{{ scan.target }}">
+                                <td>
+                                    <code>#{{ scan.id }}</code>
+                                </td>
+                                <td>
+                                    {% if scan.scan_type == 'SAST' %}
+                                        <span class="badge bg-primary">
+                                            <i data-feather="code" width="12" height="12"></i>
+                                            SAST
+                                        </span>
+                                    {% elif scan.scan_type == 'DAST' %}
+                                        <span class="badge bg-info">
+                                            <i data-feather="globe" width="12" height="12"></i>
+                                            DAST
+                                        </span>
+                                    {% elif scan.scan_type == 'IaC' %}
+                                        <span class="badge bg-secondary">
+                                            <i data-feather="server" width="12" height="12"></i>
+                                            IaC
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="text-muted">{{ scan.target }}</span>
+                                </td>
+                                <td>
+                                    {% if scan.status == 'running' %}
+                                        <span class="badge bg-primary">
+                                            <i data-feather="activity" width="12" height="12"></i>
+                                            Running
+                                        </span>
+                                    {% elif scan.status == 'completed' %}
+                                        <span class="badge bg-success">
+                                            <i data-feather="check-circle" width="12" height="12"></i>
+                                            Completed
+                                        </span>
+                                    {% elif scan.status == 'failed' %}
+                                        <span class="badge bg-danger">
+                                            <i data-feather="x-circle" width="12" height="12"></i>
+                                            Failed
+                                        </span>
+                                    {% else %}
+                                        <span class="badge bg-warning">
+                                            <i data-feather="clock" width="12" height="12"></i>
+                                            Pending
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if scan.status == 'running' %}
+                                        <div class="progress" style="width: 80px;">
+                                            <div class="progress-bar bg-primary" role="progressbar" 
+                                                 style="width: {{ scan.progress }}%" 
+                                                 data-scan-id="{{ scan.id }}">
+                                                {{ scan.progress }}%
+                                            </div>
+                                        </div>
+                                    {% elif scan.status == 'completed' %}
+                                        <span class="text-success">100%</span>
+                                    {% else %}
+                                        <span class="text-muted">--</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <small class="text-muted">
+                                        {{ scan.started_at.strftime('%m/%d %H:%M') if scan.started_at else '--' }}
+                                    </small>
+                                </td>
+                                <td>
+                                    {% if scan.completed_at and scan.started_at %}
+                                        <small class="text-muted">
+                                            {{ ((scan.completed_at - scan.started_at).total_seconds() / 60) | round(1) }}m
+                                        </small>
+                                    {% elif scan.status == 'running' %}
+                                        <small class="text-muted">Running...</small>
+                                    {% else %}
+                                        <small class="text-muted">--</small>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if scan.vulnerabilities_found > 0 %}
+                                        <span class="badge bg-danger">{{ scan.vulnerabilities_found }}</span>
+                                    {% else %}
+                                        <span class="badge bg-success">0</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <button class="btn btn-outline-primary btn-sm" onclick="viewScanDetails({{ scan.id }})" title="View Details">
+                                            <i data-feather="eye" width="14" height="14"></i>
+                                        </button>
+                                        {% if scan.status == 'completed' %}
+                                        <button class="btn btn-outline-success btn-sm" onclick="downloadReport({{ scan.id }})" title="Download Report">
+                                            <i data-feather="download" width="14" height="14"></i>
+                                        </button>
+                                        {% endif %}
+                                        {% if scan.status in ['pending', 'running'] %}
+                                        <button class="btn btn-outline-danger btn-sm" onclick="cancelScan({{ scan.id }})" title="Cancel Scan">
+                                            <i data-feather="x" width="14" height="14"></i>
+                                        </button>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                {% if not scans %}
+                <div class="text-center py-5">
+                    <i data-feather="search" width="64" height="64" class="text-muted mb-3"></i>
+                    <h5 class="text-muted">No scans found</h5>
+                    <p class="text-muted mb-4">Get started by running your first security scan</p>
+                    <button class="btn btn-primary" onclick="startScan('SAST')">
+                        <i data-feather="plus" class="me-1"></i>
+                        Start SAST Scan
+                    </button>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Scan Details Modal -->
+<div class="modal fade" id="scanDetailsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Scan Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="scanDetailsContent">
+                <!-- Content will be loaded dynamically -->
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function startScan(scanType) {
+    fetch('/api/start_scan', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            scan_type: scanType,
+            target: 'current_project'
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showAlert('success', `${scanType} scan started successfully`);
+            setTimeout(() => location.reload(), 1000);
+        } else {
+            showAlert('danger', 'Failed to start scan');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showAlert('danger', 'Error starting scan');
+    });
+}
+
+function filterScans() {
+    const typeFilter = document.getElementById('scanTypeFilter').value;
+    const statusFilter = document.getElementById('statusFilter').value;
+    const searchFilter = document.getElementById('searchFilter').value.toLowerCase();
+    
+    const rows = document.querySelectorAll('#scansTable tbody tr');
+    
+    rows.forEach(row => {
+        const scanType = row.getAttribute('data-scan-type');
+        const status = row.getAttribute('data-status');
+        const target = row.getAttribute('data-target').toLowerCase();
+        
+        let show = true;
+        
+        if (typeFilter && scanType !== typeFilter) show = false;
+        if (statusFilter && status !== statusFilter) show = false;
+        if (searchFilter && !target.includes(searchFilter)) show = false;
+        
+        row.style.display = show ? '' : 'none';
+    });
+}
+
+function viewScanDetails(scanId) {
+    fetch(`/api/scan_status/${scanId}`)
+        .then(response => response.json())
+        .then(data => {
+            const content = `
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Scan Information</h6>
+                        <table class="table table-sm">
+                            <tr><td><strong>ID:</strong></td><td>#${data.id}</td></tr>
+                            <tr><td><strong>Type:</strong></td><td>${data.scan_type}</td></tr>
+                            <tr><td><strong>Target:</strong></td><td>${data.target}</td></tr>
+                            <tr><td><strong>Status:</strong></td><td>${data.status}</td></tr>
+                            <tr><td><strong>Progress:</strong></td><td>${data.progress}%</td></tr>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Scan Progress</h6>
+                        <table class="table table-sm">
+                            <tr><td><strong>Total Files:</strong></td><td>${data.total_files}</td></tr>
+                            <tr><td><strong>Scanned Files:</strong></td><td>${data.scanned_files}</td></tr>
+                            <tr><td><strong>Vulnerabilities:</strong></td><td>${data.vulnerabilities_found}</td></tr>
+                            <tr><td><strong>Started:</strong></td><td>${data.started_at ? new Date(data.started_at).toLocaleString() : '--'}</td></tr>
+                        </table>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('scanDetailsContent').innerHTML = content;
+            const modal = new bootstrap.Modal(document.getElementById('scanDetailsModal'));
+            modal.show();
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showAlert('danger', 'Error loading scan details');
+        });
+}
+
+function downloadReport(scanId) {
+    showAlert('info', 'Report download functionality coming soon');
+}
+
+function cancelScan(scanId) {
+    if (confirm('Are you sure you want to cancel this scan?')) {
+        showAlert('info', 'Scan cancellation functionality coming soon');
+    }
+}
+
+function showAlert(type, message) {
+    const alertContainer = document.createElement('div');
+    alertContainer.className = `alert alert-${type} alert-dismissible fade show`;
+    alertContainer.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    document.querySelector('main').insertAdjacentElement('afterbegin', alertContainer);
+    
+    setTimeout(() => {
+        alertContainer.remove();
+    }, 5000);
+}
+
+// Initialize real-time updates for scan progress
+document.addEventListener('DOMContentLoaded', function() {
+    setInterval(() => {
+        // Update progress bars for running scans
+        document.querySelectorAll('[data-scan-id]').forEach(progressBar => {
+            const scanId = progressBar.getAttribute('data-scan-id');
+            fetch(`/api/scan_status/${scanId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'running') {
+                        progressBar.style.width = `${data.progress}%`;
+                        progressBar.textContent = `${data.progress}%`;
+                    }
+                })
+                .catch(error => console.error('Error updating progress:', error));
+        });
+    }, 3000); // Update every 3 seconds
+});
+</script>
+{% endblock %}

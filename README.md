@@ -40,6 +40,9 @@ A comprehensive Flask-based security scanning web application with real-time sec
 ## Features
 
 ### Security Scanning Capabilities
+
+![security scanning](https://github.com/Reaishma/Security-scanner/blob/main/Screenshot_20250904-111637_1.jpg)
+
 - **Static Application Security Testing (SAST)** - Code analysis for security vulnerabilities
 - **Dynamic Application Security Testing (DAST)** - Runtime security testing
 - **Infrastructure as Code (IaC) Scanning** - Terraform, CloudFormation security analysis

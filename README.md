@@ -63,6 +63,9 @@ A comprehensive Flask-based security scanning web application with real-time sec
 
 
 ### Real-time Features
+
+![Vulnerability](https://github.com/Reaishma/Security-scanner/blob/main/Screenshot_20250904-111654_1.jpg)
+
 - **Live Vulnerability Monitoring** - Real-time vulnerability discovery and tracking
 - **Interactive Charts** - Vulnerability trends and severity distribution
 - **Automated Scanning** - Scheduled security scans with APScheduler

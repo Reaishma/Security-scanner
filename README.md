@@ -2,6 +2,9 @@
 
 A comprehensive Flask-based security scanning web application with real-time security scanning and vulnerability monitoring capabilities. This application  featuring multi-tool security scanning (SAST, DAST,Infrastructure as Code scanning), enabling security teams to manage and track vulnerabilities across their applications. The system features real-time updates, automated scanning capabilities, and integration with enterprise security tools like SonarQube, Acunetix, Veracode, and OWASP ZAP and also  build, deployment using GitHub CI/CD pipeline, cloud infrastructure.
 
+
+![security scanner](https://github.com/Reaishma/Security-scanner/blob/main/Screenshot_20250904-111648_1.jpg)
+
 # 🚀 Live Website 
 
 **View Webpage on** https://reaishma.github.io/Security-scanner/

@@ -312,6 +312,8 @@ The `terraform/` directory contains Infrastructure as Code for AWS deployment:
 
 ## Security Features
 
+![policy management](https://github.com/Reaishma/Security-scanner/blob/main/Screenshot_20250904-111737_1.jpg)
+
 ### Authentication & Authorization
 - Session-based authentication with Flask-Login
 - CSRF protection with Flask-WTF

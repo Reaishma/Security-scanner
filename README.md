@@ -9,6 +9,10 @@ A comprehensive Flask-based security scanning web application with real-time sec
 
 **View Webpage on** https://reaishma.github.io/Security-scanner/
 
+## Developer 🧑‍💻 
+
+**Reaishma N**
+
 ## System Architecture
 
 ### Frontend Architecture
